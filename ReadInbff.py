@@ -19,6 +19,8 @@ with open(bfffile, 'r') as f:
             P.append(appending)
         elif line.startswith('A'):
             A=int(line.partition('A')[2].strip())
+        elif line.startswith('B'):
+            B=int(line.partition('B')[2].strip())
         elif line.startswith('C'):
             C=int(line.partition('C')[2].strip())
         elif line.startswith('L'):
