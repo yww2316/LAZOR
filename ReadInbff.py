@@ -8,7 +8,7 @@ import re
 P=[]
 Grid=[]
 L=[]
-bfffile='bff_files\dark_1.bff'
+bfffile='bff_files\showstopper_4.bff'
 copy=False
 with open(bfffile, 'r') as f:
     for line in f:
@@ -20,7 +20,7 @@ with open(bfffile, 'r') as f:
             P.append(appending)
         elif line.startswith('A'):
             A=int(line.partition('A')[2].strip())
-        elif line.startswith('B'):
+        elif line.startswith('B') and line.partition('B')[2].strip().isdigit():
             B=int(line.partition('B')[2].strip())
         elif line.startswith('C'):
             C=int(line.partition('C')[2].strip())
@@ -36,7 +36,15 @@ with open(bfffile, 'r') as f:
             continue
         elif copy:
             Grid.append(line.strip())
-print(L)
+
 # We will use Grid, L, A, B, C, and P
 # Grid=Initial Grid
-# L
+# L=Lazor position and velocity. First two numbers are where the the laser
+# starts, and the last two numbers are the x and y velocities.
+# A=Reflect Blocks
+# B=Opaque Blocks
+# C=Refract Blocks
+# First step is to reasd in the information from the .bff file.
+# Make class to define the blocks. Save the properties of each block in
+# the block class.
+# 
