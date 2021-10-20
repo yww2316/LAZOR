@@ -7,7 +7,8 @@ import re
 
 P=[]
 Grid=[]
-bfffile='specific.bff'
+L=[]
+bfffile='bff_files\dark_1.bff'
 copy=False
 with open(bfffile, 'r') as f:
     for line in f:
@@ -25,8 +26,8 @@ with open(bfffile, 'r') as f:
             C=int(line.partition('C')[2].strip())
         elif line.startswith('L'):
             appending=line.partition('L')[2].strip()
-            appending=[int(i) for i in appending.split() if i.isdigit()]
-            L=appending
+            appending=[int(i) for i in appending.split()]
+            L.append(appending)
         elif line.startswith('GRID START'):
             copy=True
             continue
@@ -35,3 +36,7 @@ with open(bfffile, 'r') as f:
             continue
         elif copy:
             Grid.append(line.strip())
+print(L)
+# We will use Grid, L, A, B, C, and P
+# Grid=Initial Grid
+# L
