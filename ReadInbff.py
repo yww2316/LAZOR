@@ -15,19 +15,17 @@ def ReadInbff(bfffile):
             The absolute directory path to the desired bff file.
     
     **Returns**
-    # We will use P, A, B, C, L, Grid
-    # Grid: *list
-    #   Initial Grid
-    # L: *list
-    #   Lazor position and velocity. First two numbers are where the the laser
-    #   starts, and the last two numbers are the x and y velocities.
-    # A: *int
-    #   Number of Reflect Blocks
-    # B: *int 
-    #   Number of Opaque Blocks
-    # C: *int
-    #   Number of Refract Blocks
-    # First step is to read in the information from the .bff file.
+        Grid: *list
+            Initial Grid
+        L: *list
+            Lazor position and velocity. First two numbers are where the the laser
+            starts, and the last two numbers are the x and y velocities.
+        A: *int
+            Number of Reflect Blocks
+        B: *int 
+            Number of Opaque Blocks
+        C: *int
+            Number of Refract Blocks
     '''
     P=[]
     Grid=[]
@@ -66,32 +64,120 @@ def ReadInbff(bfffile):
 
 # Make class to define the blocks. Save the properties of each block in
 # the block class.
-class Block(object):
+class Block:
     '''
-    Here we store all the attributes 
+    Here we store all the attributes of each block type and allow
+    for the Block class to be called to descrive the attributes
+    of each block type.
     '''
-    def Reflect(self, lr, va, vb):
-        if lr==1:
-            vx=-va
-            vy=vb
-        else:
-            vx=va
-            vy=-vb
-        return vx, vy
+    def __init__(self, block_type, lr, va, vb):
+        self.block_type = block_type
+        self.lr = lr
+        self.va = va
+        self.vb = vb
+
+    def __call__(self, block_type, lr, va, vb):
+
+        def Reflect(lr, va, vb):
+            '''
+            Returns the vx and vy after impacting the reflect block. vx and vy
+            are dependent on what side of the reflect block is impacted.
+
+            **Parameters**
+
+                lr: *int
+                    0 if the top or bottom is impacted, 1 if the left or right is
+                    impacted.
+                va: *int
+                    The x velocity of the laser just before impact.
+                vb: *int
+                    The y velocity of the laser just before impact.
+            
+            **Returns**
+
+                vx: *int
+                    The x velocity of the laser after impact.
+                vy: *int
+                    The y velocity of the laser after impact.
+            '''
+
+            if lr==1:
+                vx=-va
+                vy=vb
+            else:
+                vx=va
+                vy=-vb
+            return vx, vy
     
-    def Opaque(self, va, vb):
-        vx=0
-        vy=0
-        return vx, vy
-    
-    def Refract(self, lr, va, vb):
-        if lr==1:
-            vx=-va
-            vy=vb
-        else:
-            vx=va
-            vy=-vb
-        return va, vb, vx, vy
+        def Opaque(lr, va, vb):
+            '''
+            Returns the vx and vy after impacting the opaque block. vx and vy
+            are both 0 after hitting this block.
+
+            **Parameters**
+
+                lr: *int
+                    0 if the top or bottom is impacted, 1 if the left or right is
+                    impacted.
+                va: *int
+                    The x velocity of the laser just before impact.
+                vb: *int
+                    The y velocity of the laser just before impact.
+            
+            **Returns**
+
+                vx: *int
+                    The x velocity of the laser after impact.
+                vy: *int
+                    The y velocity of the laser after impact.
+            '''
+            vx=0
+            vy=0
+            return vx, vy
+
+        
+        def Refract(lr, va, vb):
+            '''
+            Returns the vx and vy, and the same va and vb as inputted, after impacting the reflect block. 
+            vx and vy are dependent on what side of the reflect block is impacted.
+
+            **Parameters**
+
+                lr: *int
+                    0 if the top or bottom is impacted, 1 if the left or right is
+                    impacted.
+                va: *int
+                    The x velocity of the laser just before impact.
+                vb: *int
+                    The y velocity of the laser just before impact.
+            
+            **Returns**
+
+                vx: *int
+                    The x velocity of the laser after impact.
+                vy: *int
+                    The y velocity of the laser after impact.
+                va: *int
+                    The x velocity of the second laser after impact.
+                vb: *int
+                    The y velocity of the second laser after impact.
+            '''
+            if lr==1:
+                vx=-va
+                vy=vb
+            else:
+                vx=va
+                vy=-vb
+            return va, vb, vx, vy
+
+        if block_type == 'A':
+            return Reflect(lr, va, vb)
+        elif block_type == 'B':
+            return Opaque(lr, va, vb)
+        elif block_type == 'C':
+            return Refract(lr, va, vb)
+        elif block_type == 'o':
+            return va, vb
 
 
 def pos_chk(x, y, width, height):
@@ -115,7 +201,43 @@ def pos_chk(x, y, width, height):
     '''
     return x >= 0 and x <= width and y >= 0 and y <= height
 
+def solve_lazor(P, A, B, C, L, Grid):
+    '''
+     **Parameters**
+
+    Grid: *list
+      Initial grid read from the inputted .bff file.
+    L: *list
+      Lazor position and velocity. First two numbers are where the the laser
+      starts, and the last two numbers are the x and y velocities.
+    A: *int
+      Number of Reflect Blocks
+    B: *int 
+      Number of Opaque Blocks
+    C: *int
+      Number of Refract Blocks
+
+    **Returns**
+        Solved_Grid: *list
+
+    '''
+    Solved_Grid = Grid
+
+    return Solved_Grid
 if __name__=='__main__':
+
     bfffile='bff_files\showstopper_4.bff'
+    # bfffile=input('Please Enter the name of the .bff file to be solved: ')
+    # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
+    print('')
+    print('Initial Grid:')
+    print('')
     print("\n".join(map(" ".join, Grid)))
+    # bah = Block('A', 1, 1, 1)
+    # print(bah('A', 1, 2, 1))
+    solved=solve_lazor(P, A, B, C, L, Grid)
+    print('')
+    print('Solution:')
+    print('')
+    print("\n".join(map(" ".join, solved)))
