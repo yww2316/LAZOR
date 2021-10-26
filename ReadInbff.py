@@ -70,17 +70,52 @@ class Block(object):
     '''
     Here we store all the attributes 
     '''
-    def __init__(self, A, B, C):
-        self.A = A
-        self.B = B
-        self.C = C
+    def Reflect(self, lr, va, vb):
+        if lr==1:
+            vx=-va
+            vy=vb
+        else:
+            vx=va
+            vy=-vb
+        return vx, vy
     
-    def Reflect(self, x, y, vx, vy):
-        
-        return x, y, vx, vy
+    def Opaque(self, va, vb):
+        vx=0
+        vy=0
+        return vx, vy
+    
+    def Refract(self, lr, va, vb):
+        if lr==1:
+            vx=-va
+            vy=vb
+        else:
+            vx=va
+            vy=-vb
+        return va, vb, vx, vy
 
+
+def pos_chk(x, y, width, height):
+    '''
+    Validate if the coordinates specified (x and y) are within the maze.
+
+    **Parameters**
+
+        x: *int*
+            An x coordinate to check if it resides within the maze.
+        y: *int*
+            A y coordinate to check if it resides within the maze.
+        nBlocks: *int*
+            How many blocks wide the maze is.  Should be equivalent to
+            the length of the maze (ie. len(maze)).
+
+    **Returns**
+
+        valid: *bool*
+            Whether the coordiantes are valid (True) or not (False).
+    '''
+    return x >= 0 and x <= width and y >= 0 and y <= height
 
 if __name__=='__main__':
     bfffile='bff_files\showstopper_4.bff'
     P, A, B, C, L, Grid = ReadInbff(bfffile)
-    print(Grid)
+    print("\n".join(map(" ".join, Grid)))
