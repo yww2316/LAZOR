@@ -75,10 +75,8 @@ class Block:
         self.lr = lr
         self.va = va
         self.vb = vb
-
-    def __call__(self, block_type, lr, va, vb):
-
-        def Reflect(lr, va, vb):
+    
+    def Reflect(lr, va, vb):
             '''
             Returns the vx and vy after impacting the reflect block. vx and vy
             are dependent on what side of the reflect block is impacted.
@@ -109,73 +107,75 @@ class Block:
                 vy=-vb
             return vx, vy
     
-        def Opaque(lr, va, vb):
-            '''
-            Returns the vx and vy after impacting the opaque block. vx and vy
-            are both 0 after hitting this block.
+    def Opaque(lr, va, vb):
+        '''
+        Returns the vx and vy after impacting the opaque block. vx and vy
+        are both 0 after hitting this block.
 
-            **Parameters**
+        **Parameters**
 
-                lr: *int
-                    0 if the top or bottom is impacted, 1 if the left or right is
-                    impacted.
-                va: *int
-                    The x velocity of the laser just before impact.
-                vb: *int
-                    The y velocity of the laser just before impact.
-            
-            **Returns**
+            lr: *int
+                0 if the top or bottom is impacted, 1 if the left or right is
+                impacted.
+            va: *int
+                The x velocity of the laser just before impact.
+            vb: *int
+                The y velocity of the laser just before impact.
+        
+        **Returns**
 
-                vx: *int
-                    The x velocity of the laser after impact.
-                vy: *int
-                    The y velocity of the laser after impact.
-            '''
-            vx=0
-            vy=0
-            return vx, vy
+            vx: *int
+                The x velocity of the laser after impact.
+            vy: *int
+                The y velocity of the laser after impact.
+        '''
+        vx=0
+        vy=0
+        return vx, vy
 
         
-        def Refract(lr, va, vb):
-            '''
-            Returns the vx and vy, and the same va and vb as inputted, after impacting the reflect block. 
-            vx and vy are dependent on what side of the reflect block is impacted.
+    def Refract(lr, va, vb):
+        '''
+        Returns the vx and vy, and the same va and vb as inputted, after impacting the reflect block. 
+        vx and vy are dependent on what side of the reflect block is impacted.
 
-            **Parameters**
+        **Parameters**
 
-                lr: *int
-                    0 if the top or bottom is impacted, 1 if the left or right is
-                    impacted.
-                va: *int
-                    The x velocity of the laser just before impact.
-                vb: *int
-                    The y velocity of the laser just before impact.
-            
-            **Returns**
+            lr: *int
+                0 if the top or bottom is impacted, 1 if the left or right is
+                impacted.
+            va: *int
+                The x velocity of the laser just before impact.
+            vb: *int
+                The y velocity of the laser just before impact.
+        
+        **Returns**
 
-                vx: *int
-                    The x velocity of the laser after impact.
-                vy: *int
-                    The y velocity of the laser after impact.
-                va: *int
-                    The x velocity of the second laser after impact.
-                vb: *int
-                    The y velocity of the second laser after impact.
-            '''
-            if lr==1:
-                vx=-va
-                vy=vb
-            else:
-                vx=va
-                vy=-vb
-            return va, vb, vx, vy
+            vx: *int
+                The x velocity of the laser after impact.
+            vy: *int
+                The y velocity of the laser after impact.
+            va: *int
+                The x velocity of the second laser after impact.
+            vb: *int
+                The y velocity of the second laser after impact.
+        '''
+        if lr==1:
+            vx=-va
+            vy=vb
+        else:
+            vx=va
+            vy=-vb
+        return vx, vy, va, vb
+
+    def __call__(self, block_type, lr, va, vb):
 
         if block_type == 'A':
-            return Reflect(lr, va, vb)
+            return Block.Reflect(lr, va, vb)
         elif block_type == 'B':
-            return Opaque(lr, va, vb)
+            return Block.Opaque(lr, va, vb)
         elif block_type == 'C':
-            return Refract(lr, va, vb)
+            return Block.Refract(lr, va, vb)
         elif block_type == 'o':
             return va, vb
 
@@ -230,12 +230,13 @@ if __name__=='__main__':
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
+    # print(P, A, B, C, L, Grid)
     print('')
     print('Initial Grid:')
     print('')
     print("\n".join(map(" ".join, Grid)))
-    # bah = Block('A', 1, 1, 1)
-    # print(bah('A', 1, 2, 1))
+    bah = Block('B', 1, 1, 1)
+    print(bah('A', 1, 2, 1))
     solved=solve_lazor(P, A, B, C, L, Grid)
     print('')
     print('Solution:')
