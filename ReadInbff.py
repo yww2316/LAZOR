@@ -64,6 +64,7 @@ def ReadInbff(bfffile):
 
 # Make class to define the blocks. Save the properties of each block in
 # the block class.
+
 class Block:
     '''
     Here we store all the attributes of each block type and allow
@@ -230,15 +231,16 @@ if __name__=='__main__':
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
-    # print(P, A, B, C, L, Grid)
+    #print(P, A, B, C, L, Grid)
     print('')
     print('Initial Grid:')
     print('')
     print("\n".join(map(" ".join, Grid)))
-    bah = Block('B', 1, 1, 1)
-    print(bah('A', 1, 2, 1))
+    #bah = Block('B', 1, 1, 1)
+    #print(bah('A', 1, 2, 1))
     solved=solve_lazor(P, A, B, C, L, Grid)
     print('')
     print('Solution:')
     print('')
     print("\n".join(map(" ".join, solved)))
+    #Number of laser grid points is 2N*2N
