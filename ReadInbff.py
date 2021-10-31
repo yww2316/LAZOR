@@ -218,31 +218,27 @@ def define_grid(Grid):
     for i in range(len(grid_list)):
         grid_expanded.append(grid_list[i] * 9)
     grid_separated = []
-    grid_separated = []
     for i in range(x_vals):
         for j in range(y_vals):
             grid_grouped_list = [grid_expanded[n:n+x_vals] for n in range(0, len(grid_expanded),x_vals)]
             grid_grouped = grid_grouped_list[i][j]
             grid_separated = grid_separated + list(grid_grouped[:9])
-    print(grid_separated)
     # for i in range(x_vals):
     #     for j in range(y_vals):
     #         grid_elements = [grid_separated[n:n+x_vals] for n in range(0, len(grid_separated),x_vals)]
     x_count = 2
     y_count = x_values + 3
-    print(len(grid_separated))
     while x_count < x_values*9:
         grid_separated[x_count] = grid_separated[x_count] + grid_separated[x_count + 9]
         x_count = x_count + 3
     # while y_count < x_values + y_values:
     #     grid_separated[y_count] = grid_separated[y_count] + grid_separated[y_count + 1]
     #     y_count = y_count + 2
-    for i in range(x_vals):
-        for j in range(y_vals):
-            grid_grouped_list = [grid_separated[n:n+x_vals] for n in range(0, len(grid_separated),x_vals)]
-            grid_grouped = grid_grouped_list[i][j]
-            grid_separated = grid_separated + list(grid_grouped[:9])
-    print(grid_separated)
+    for i in range(1, x_values+2):
+        grid_grouped_list = [grid_separated[n:n+i] for n in range(0, len(grid_separated),i)]
+    print(grid_grouped_list)
+    print(grid_grouped_list[0][6])
+
     
 
 def solve_lazor(P, A, B, C, L, Grid):
