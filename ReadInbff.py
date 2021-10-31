@@ -202,6 +202,49 @@ def pos_chk(x, y, width, height):
     '''
     return x >= 0 and x <= width and y >= 0 and y <= height
 
+def define_grid(Grid):
+    y_values = len(Grid)*2
+    x_values = []
+    for i in Grid:
+        x_values.append(i.split(' ')[0])
+    x_values = len(x_values)*2
+    grid_list = []
+    for i in Grid:
+        for j in range(int((y_values / 2))):
+            grid_list.append(i.split(' ')[j])
+    x_vals = int(x_values/2)
+    y_vals = int(y_values/2)
+    grid_expanded = []
+    for i in range(len(grid_list)):
+        grid_expanded.append(grid_list[i] * 9)
+    grid_separated = []
+    grid_separated = []
+    for i in range(x_vals):
+        for j in range(y_vals):
+            grid_grouped_list = [grid_expanded[n:n+x_vals] for n in range(0, len(grid_expanded),x_vals)]
+            grid_grouped = grid_grouped_list[i][j]
+            grid_separated = grid_separated + list(grid_grouped[:9])
+    print(grid_separated)
+    # for i in range(x_vals):
+    #     for j in range(y_vals):
+    #         grid_elements = [grid_separated[n:n+x_vals] for n in range(0, len(grid_separated),x_vals)]
+    x_count = 2
+    y_count = x_values + 3
+    print(len(grid_separated))
+    while x_count < x_values*9:
+        grid_separated[x_count] = grid_separated[x_count] + grid_separated[x_count + 9]
+        x_count = x_count + 3
+    # while y_count < x_values + y_values:
+    #     grid_separated[y_count] = grid_separated[y_count] + grid_separated[y_count + 1]
+    #     y_count = y_count + 2
+    for i in range(x_vals):
+        for j in range(y_vals):
+            grid_grouped_list = [grid_separated[n:n+x_vals] for n in range(0, len(grid_separated),x_vals)]
+            grid_grouped = grid_grouped_list[i][j]
+            grid_separated = grid_separated + list(grid_grouped[:9])
+    print(grid_separated)
+    
+
 def solve_lazor(P, A, B, C, L, Grid):
     '''
      **Parameters**
