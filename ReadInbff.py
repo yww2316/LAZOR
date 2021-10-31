@@ -238,7 +238,21 @@ def define_grid(Grid):
         grid_grouped_list = [grid_separated[n:n+i] for n in range(0, len(grid_separated),i)]
     print(grid_grouped_list)
     print(grid_grouped_list[0][6])
+    return grid_grouped_list
 
+def as_string(seq_of_rows):
+    '''
+    Function for visualizing the new_grid more easily.
+    **Parameters**
+        seq_of_rows: *list
+            A list of lists that has the elements of the new coordinate system.
+
+    **Returns**
+        Visual: *string
+            A string that has all the elements in a more visually understandable
+            format.
+    '''
+    return '\n'.join(''.join(str(i).center(5) for i in row) for row in seq_of_rows)
     
 
 def solve_lazor(P, A, B, C, L, Grid):
@@ -277,9 +291,11 @@ if __name__=='__main__':
     print("\n".join(map(" ".join, Grid)))
     #bah = Block('B', 1, 1, 1)
     #print(bah('A', 1, 2, 1))
-    solved=solve_lazor(P, A, B, C, L, Grid)
-    print('')
-    print('Solution:')
-    print('')
-    print("\n".join(map(" ".join, solved)))
+    new_grid=define_grid(Grid)
+    print(as_string(new_grid))
+    #solved=solve_lazor(P, A, B, C, L, Grid)
+    #print('')
+    #print('Solution:')
+    #print('')
+    #print("\n".join(map(" ".join, solved)))
     #Number of laser grid points is 2N*2N
