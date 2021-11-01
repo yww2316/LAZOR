@@ -267,8 +267,9 @@ def as_string(seq_of_rows):
     return '\n'.join(''.join(str(i).center(5) for i in row)
                      for row in seq_of_rows)
 
- def laser_path(start):
-    laser_pos = [start] # list of all the positions the laser passed
+
+def laser_path(start):
+    laser_pos = [start]  # list of all the positions the laser passed
     vx = 1
     vy = 1
     grid_h = len(new_grid)
@@ -280,13 +281,13 @@ def as_string(seq_of_rows):
         (-1, 1)
     ]
 
-    change = Block('A',1,1,1) # location, velocity x, y
+    change = Block('A', 1, 1, 1)  # location, velocity x, y
     # the velocity wouldn't be any different though? always (1,1)?
 
-
-    while pos_chk(laser_pos[-1][0], laser_pos[-1][1], grid_w - 1, grid_h - 1):  # if position within block
+    # if position within block
+    while pos_chk(laser_pos[-1][0], laser_pos[-1][1], grid_w - 1, grid_h - 1):
         # get current laser position
-        lz_cur = laser_pos[-1] 
+        lz_cur = laser_pos[-1]
         old_x = lz_cur[0]
         old_y = lz_cur[1]
 
@@ -297,13 +298,15 @@ def as_string(seq_of_rows):
         ch = change(new_grid[old_y][old_x], hit, vx, vy)
         print('type:', new_grid[old_y][old_x])
         print("ch:", ch)
-        new_x = old_x + laser_dir[2][0]*ch[0] + 1  # the new x position after stepping
+        # the new x position after stepping
+        new_x = old_x + laser_dir[2][0]*ch[0] + 1
         new_y = old_y + laser_dir[2][0]*ch[1] + 1
-        print('new x:',new_x,'new y:',new_y)
-        
+        print('new x:', new_x, 'new y:', new_y)
+
         # append into the position list for laser
         laser_pos.append((new_x, new_y))
     return laser_pos
+
 
 def output_random_grid(Grid, A, B, C, Repeat_Grid):
     '''
@@ -353,6 +356,7 @@ def output_random_grid(Grid, A, B, C, Repeat_Grid):
         Output_Grid.append(" ".join(i))
     Repeat_Grid.append(Output_Grid)
     return Output_Grid, Repeat_Grid
+
 
 def solve_lazor(P, A, B, C, L, Grid):
     '''
