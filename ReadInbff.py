@@ -173,11 +173,11 @@ class Block:
 
         if block_type == 'A':
             return Block.Reflect(lr, va, vb)
-        elif block_type == 'B':
+        elif block_type == 'B' or 'Bo':
             return Block.Opaque(lr, va, vb)
         elif block_type == 'C':
             return Block.Refract(lr, va, vb)
-        elif block_type == 'o':
+        elif block_type == 'o' or 'oo':
             return va, vb
 
 
@@ -253,7 +253,46 @@ def as_string(seq_of_rows):
             format.
     '''
     return '\n'.join(''.join(str(i).center(5) for i in row) for row in seq_of_rows)
-    
+
+
+def laser_path(start):
+    laser_pos = [start] # list of all the positions the laser passed
+    vx = 1
+    vy = 1
+    grid_h = len(new_grid)
+    grid_w = len(new_grid[0])
+    laser_dir = [
+        (1, 1),
+        (-1, -1),
+        (1, -1),
+        (-1, 1)
+    ]
+
+    change = Block('A',1,1,1) # location, velocity x, y
+    # the velocity wouldn't be any different though? always (1,1)?
+
+
+    while pos_chk(laser_pos[-1][0], laser_pos[-1][1], grid_w - 1, grid_h - 1):  # if position within block
+        # get current laser position
+        lz_cur = laser_pos[-1] 
+        old_x = lz_cur[0]
+        old_y = lz_cur[1]
+
+        # check hit top/bottom (0) or left/right (1) - how
+        hit = 1
+
+        # get the change and update new position
+        ch = change(new_grid[old_y][old_x], hit, vx, vy)
+        print('type:', new_grid[old_y][old_x])
+        print("ch:", ch)
+        new_x = old_x + laser_dir[2][0]*ch[0] + 1  # the new x position after stepping
+        new_y = old_y + laser_dir[2][0]*ch[1] + 1
+        print('new x:',new_x,'new y:',new_y)
+        
+        # append into the position list for laser
+        laser_pos.append((new_x, new_y))
+    return laser_pos
+
 
 def solve_lazor(P, A, B, C, L, Grid):
     '''
