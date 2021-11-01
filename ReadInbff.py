@@ -177,11 +177,11 @@ class Block:
 
         if block_type == 'A':
             return Block.Reflect(lr, va, vb)
-        elif block_type == 'B':
+        elif block_type == 'B' or block_type == 'Bo':
             return Block.Opaque(lr, va, vb)
         elif block_type == 'C':
             return Block.Refract(lr, va, vb)
-        elif block_type == 'o':
+        elif block_type == 'o' or block_type == 'oo' or block_type == 'x':
             return va, vb
 
 
@@ -360,6 +360,9 @@ if __name__ == '__main__':
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
     print(A, B, C, Grid)
+    ans = Block('o', 1, 1, 1)
+    a = ans('o', 1, 0, 1)
+    print(a)
     print('')
     print('Initial Grid:')
     print('')
