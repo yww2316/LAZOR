@@ -66,6 +66,13 @@ class bffTest(unittest.TestCase):
         P, A, B, C, L, Grid = self.parseddata
         self.assertTrue(type(solve_lazor(P, A, B, C, L, Grid)) is list)
 
+    def test_random_grid(self):
+        '''
+        Checks to makes sure that a random grid is ouputted.
+        '''
+        P, A, B, C, L, Grid = self.parseddata
+        self.assertTrue(type(output_random_grid(Grid, A, B, C, [])) is tuple)
+
 
 if __name__ == '__main__':
     unittest.main()
