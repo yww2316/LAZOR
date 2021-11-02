@@ -175,13 +175,13 @@ class Block:
 
     def __call__(self, block_type, lr, va, vb):
 
-        if block_type == 'A':
-            return Block.Reflect(lr, va, vb)
-        elif block_type == 'B' or block_type == 'Bo':
+        if 'B' in block_type:
             return Block.Opaque(lr, va, vb)
-        elif block_type == 'C':
+        elif 'A' in block_type:
+            return Block.Reflect(lr, va, vb)
+        elif 'C' in block_type:
             return Block.Refract(lr, va, vb)
-        elif block_type == 'o' or block_type == 'oo' or block_type == 'x':
+        else:
             return va, vb
 
 
