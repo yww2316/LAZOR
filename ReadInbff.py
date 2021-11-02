@@ -268,7 +268,7 @@ def as_string(seq_of_rows):
                      for row in seq_of_rows)
 
 
-def laser_path(start):
+def laser_path(start, new_grid):
     laser_pos = [start]  # list of all the positions the laser passed
     vx = 1
     vy = 1
@@ -299,8 +299,8 @@ def laser_path(start):
         print('type:', new_grid[old_y][old_x])
         print("ch:", ch)
         # the new x position after stepping
-        new_x = old_x + laser_dir[2][0]*ch[0] + 1
-        new_y = old_y + laser_dir[2][0]*ch[1] + 1
+        new_x = old_x + laser_dir[2][0] * ch[0]
+        new_y = old_y + laser_dir[2][0] * ch[1]
         print('new x:', new_x, 'new y:', new_y)
 
         # append into the position list for laser
