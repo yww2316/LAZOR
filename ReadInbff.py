@@ -208,47 +208,63 @@ def pos_chk(x, y, width, height):
 
 
 def define_grid(Grid):
-    y_values = len(Grid)*2
-    x_values = []
-    for i in Grid:
-        x_values.append(i.split(' ')[0])
-    x_values = len(x_values)*2
-    grid_list = []
-    for i in Grid:
-        for j in range(int((y_values / 2))):
-            grid_list.append(i.split(' ')[j])
-    x_vals = int(x_values/2)
-    y_vals = int(y_values/2)
+    y_values = len(Grid) * 2
+    grid = list(Grid)
+    grid_elements = []
+    for i in grid:
+        grid_elements.append(i.split(' '))
+    count = 0
+    grid_expanded_y = grid_elements * 3
     grid_expanded = []
-    for i in range(len(grid_list)):
-        grid_expanded.append(grid_list[i] * 9)
-    grid_separated = []
-    for i in range(x_vals):
-        for j in range(y_vals):
-            grid_grouped_list = [grid_expanded[n:n+x_vals] for n in
-                                 range(0, len(grid_expanded), x_vals)]
-            grid_grouped = grid_grouped_list[i][j]
-            grid_separated = grid_separated + list(grid_grouped[:9])
-    # for i in range(x_vals):
-    #     for j in range(y_vals):
-    #         grid_elements = [grid_separated[n:n+x_vals] for n in
-    #         range(0, len(grid_separated),x_vals)]
-    x_count = 2
-    y_count = x_values + 3
-    while x_count < x_values*9:
-        grid_separated[x_count] =\
-            grid_separated[x_count] + grid_separated[x_count + 9]
-        x_count = x_count + 3
-    # while y_count < x_values + y_values:
-    #     grid_separated[y_count] =\
-    #        grid_separated[y_count] + grid_separated[y_count + 1]
-    #     y_count = y_count + 2
-    for i in range(1, x_values+2):
-        grid_grouped_list = [grid_separated[n:n+i] for n in
-                             range(0, len(grid_separated), i)]
-    print(grid_grouped_list)
-    print(grid_grouped_list[0][6])
-    return grid_grouped_list
+    for element in grid_elements:
+        count += len(element)
+    for element in grid_expanded_y:
+        for i in range(len(element)):
+            grid_expanded.append(element[i] * 3)
+    x_values = int((count / (y_values / 2)) * 2)
+    x_vals = int(x_values / 2)
+    grid_grouped_list = [grid_expanded[n:n + x_vals] for n in
+                         range(0, len(grid_expanded), x_vals)]
+    grid_grouped = []
+    for element in grid_grouped_list:
+        for i in range(len(element)):
+            grid_grouped.append(list(element[i]))
+    count = 0
+    grid_grouped_single_list = []
+    for element in grid_grouped:
+        count += len(element)
+    for i in range(len(grid_grouped)):
+        for j in range(3):
+            grid_grouped_single_list.append(grid_grouped[i][j])
+            grid_combined = grid_grouped_single_list + \
+                list(grid_grouped_single_list[:3])
+    counter = 0
+    while counter < 3:
+        grid_combined.pop()
+        counter += 1
+    print(grid_combined)
+    max_rows = x_vals * 3
+    grid_coords = []
+    row_cnt = 0
+    row = []
+    for i, letter in enumerate(grid_combined):
+        if i > (row_cnt + 1) * max_rows - 1:
+            if row != []:
+                grid_coords.append(row)
+                row = []
+                row_cnt += 1
+        if i != (row_cnt * max_rows) and i % 3 == 0:
+            pass
+        elif i in list(range(row_cnt * max_rows + 2,
+                             (row_cnt + 1) * max_rows - 1, 3)):
+            temp = grid_combined[i] + grid_combined[i + 1]
+            row.append(temp)
+        else:
+            temp = grid_combined[i]
+            row.append(temp)
+    grid_coords.append(row)
+    print(grid_coords)
+    return grid_coords
 
 
 def as_string(seq_of_rows):
