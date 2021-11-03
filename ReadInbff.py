@@ -28,6 +28,8 @@ def ReadInbff(bfffile):
             Number of Opaque Blocks
         C: *int
             Number of Refract Blocks
+        P: *list
+            Points for laser to intersect
     '''
     P = []
     Grid = []
@@ -268,43 +270,66 @@ def as_string(seq_of_rows):
                      for row in seq_of_rows)
 
 
-def laser_path(start, new_grid):
-    laser_pos = [start]  # list of all the positions the laser passed
-    vx = 1
-    vy = 1
+def laser_path(P, L, new_grid):
+
+    '''currently a trial of the path the laser takes'''
+
+    # make the intersection points into a list of tuples
+    intersect_pts = []
+    for pt in P:
+        intersect_pts.append(tuple(pt))
+
+    # starting position (user input)
+    position = tuple(L[0][:2])
+    # starting velocity (user input)
+    vx = L[0][2]
+    vy = L[0][3]
+    # list of all the positions the laser passed
+    laser_pos = [position]
+
     grid_h = len(new_grid)
     grid_w = len(new_grid[0])
-    laser_dir = [
-        (1, 1),
-        (-1, -1),
-        (1, -1),
-        (-1, 1)
-    ]
 
-    change = Block('A', 1, 1, 1)  # location, velocity x, y
-    # the velocity wouldn't be any different though? always (1,1)?
+    change = Block('A', 1, 1, 1)  # block type, hit, vx, vy
 
     # if position within block
-    while pos_chk(laser_pos[-1][0], laser_pos[-1][1], grid_w - 1, grid_h - 1):
-        # get current laser position
-        lz_cur = laser_pos[-1]
-        old_x = lz_cur[0]
-        old_y = lz_cur[1]
+    in_grid = True
+    # did laser pass all the points
+    all_touched = False
+    while not all_touched:
+        if in_grid:
+            # get current laser position
+            lz_cur = laser_pos[-1]
+            old_x = lz_cur[0]
+            old_y = lz_cur[1]
 
-        # check hit top/bottom (0) or left/right (1) - how
-        hit = 1
+            # check hit top/bottom (0) or left/right (1) - x odd or even
+            if old_x % 2 == 0:   # if even, left/right
+                hit = 1
+            else:
+                hit = 0
 
-        # get the change and update new position
-        ch = change(new_grid[old_y][old_x], hit, vx, vy)
-        print('type:', new_grid[old_y][old_x])
-        print("ch:", ch)
-        # the new x position after stepping
-        new_x = old_x + laser_dir[2][0] * ch[0]
-        new_y = old_y + laser_dir[2][0] * ch[1]
-        print('new x:', new_x, 'new y:', new_y)
+            # get the change and update new position
+            ch = change(new_grid[old_y][old_x], hit, vx, vy)
 
-        # append into the position list for laser
-        laser_pos.append((new_x, new_y))
+            # the new x position after stepping
+            if ch[0] == 0 and ch[1] == 0:  # if hits opaque
+                # random neg num so doesn't come back into loop
+                new_x = -1
+                new_y = -1
+            else:
+                new_x = old_x + ch[0]
+                new_y = old_y + ch[1]
+
+            # append into the position list for laser
+            laser_pos.append((new_x, new_y))
+            in_grid = pos_chk(
+                laser_pos[-1][0], laser_pos[-1][1], grid_w - 1, grid_h - 1)
+            # laser touched all intersect pts
+            all_touched = all(elem in laser_pos for elem in intersect_pts)
+        else:
+            all_touched = True  # exit loop
+            laser_pos = 'not solved'  # show did not touch all pts
     return laser_pos
 
 
