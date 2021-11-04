@@ -57,6 +57,13 @@ class bffTest(unittest.TestCase):
         bah = Block('B', 1, 2, 1)
         self.assertEqual(bah('A', 1, 1, 1), self.block,
                          'The block information is not saved correctly.')
+        
+    def define_grid(self):
+        '''
+        Checks to make sure that the grid coordinates are outputted 
+        correctly by the define_grid function.
+        '''
+        self.assertEqual(define_grid(Grid), self.define_grid, 'The grid coordinates were not generated correctly.')
 
     def test_Solve(self):
         '''
