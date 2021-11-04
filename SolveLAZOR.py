@@ -394,8 +394,9 @@ def output_random_grid(Grid, A, B, C, Repeat_Grid):
 
     Random_Grid = []
     Output_Grid = []
-    for i in Grid:
-        Random_Grid.append(i.split(" "))
+    for ls in Grid:
+        for elem in ls:
+            Random_Grid.append(elem.split(" "))
     print(Random_Grid)
     while A > 0 or B > 0 or C > 0:
         list1 = random.randrange(len(Random_Grid))
