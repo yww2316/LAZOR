@@ -209,6 +209,7 @@ def pos_chk(x, y, width, height):
     return x >= 0 and x <= width and y >= 0 and y <= height
 
 
+
 def define_grid(Grid):
     y_values = len(Grid) * 2
     grid = list(Grid)
@@ -216,7 +217,14 @@ def define_grid(Grid):
     for i in grid:
         grid_elements.append(i.split(' '))
     count = 0
-    grid_expanded_y = grid_elements * 3
+    grid_expanded_y = []
+    counter = 0
+    for element in grid_elements:
+        if element == grid_elements[0] and counter == 0:
+            grid_expanded_y.append(element * 3)
+            counter = 1
+        else:
+            grid_expanded_y.append(element * 2)
     grid_expanded = []
     for element in grid_elements:
         count += len(element)
@@ -244,7 +252,6 @@ def define_grid(Grid):
     while counter < 3:
         grid_combined.pop()
         counter += 1
-    print(grid_combined)
     max_rows = x_vals * 3
     grid_coords = []
     row_cnt = 0
@@ -266,8 +273,18 @@ def define_grid(Grid):
             row.append(temp)
     grid_coords.append(row)
     print(grid_coords)
+    print('\n')
+    try:
+        for i in range(len(grid_coords)):
+            if i % 2 == 0 and i != 0:
+                # print(grid_coords[i])
+                for j in range(1, x_values):
+                    grid_coords[i][j] = grid_coords[i - 1][j] + \
+                        grid_coords[i + 1][j]
+    except IndexError:
+        print('Grid completed!')
+    print(grid_coords)
     return grid_coords
-
 
 def as_string(seq_of_rows):
     '''
