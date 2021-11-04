@@ -3,7 +3,6 @@ import unittest
 from SolveLAZOR import *
 from SolveLAZOR import Block
 
-Grid = ['o B x o o', 'o o o o o', 'o x o o o', 'o x o o x', 'o o x x o', 'B o x o o']
 
 class bffTest(unittest.TestCase):
     def setUp(self):
@@ -65,7 +64,7 @@ class bffTest(unittest.TestCase):
         Checks to make sure that the grid coordinates are outputted
         correctly by the define_grid function.
         '''
-        P, A, B, C, L, Grid = self.parseddata
+        Grid = ['o B x o o', 'o o o o o', 'o x o o o', 'o x o o x', 'o o x x o', 'B o x o o']
         self.assertEqual(define_grid(Grid), self.define_grid,
                          'The grid coordinates were not generated correctly.')
 
