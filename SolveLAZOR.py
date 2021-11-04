@@ -208,83 +208,176 @@ def pos_chk(x, y, width, height):
     '''
     return x >= 0 and x <= width and y >= 0 and y <= height
 
-
-
 def define_grid(Grid):
+    '''
+    Generate list that has correct coordinate values
+    for each element (A, B, C, o, x).
+    **Parameters**
+        Grid: *list
+                Initial grid.
+
+    **Returns**
+        grid_coords: *list
+                Expanded grid that contains the correct
+                coordinates x, y for solving maze.
+    '''
     y_values = len(Grid) * 2
-    grid = list(Grid)
     grid_elements = []
-    for i in grid:
+    # First, we have to split the row strings and instead make them into
+    # nested lists. Save into grid_elements.
+    for i in Grid:
         grid_elements.append(i.split(' '))
     count = 0
     grid_expanded_y = []
     counter = 0
+
+    # Next, we want to repeat each row to put into coordinates.
+    # For example, a row of 'o', 'o', 'o'  will need to be multiplied by three
+    # become 'o', 'o', 'o','o', 'o', 'o','o', 'o', 'o' if it is the first row.
+    # However, if it is not in the first row,
+    # then we will need to multiply by two.
+    # It will instead become 'o', 'o', 'o', 'o', 'o', 'o'.
+    # This is because there are three rows between y = 0 to y = 2
+    # but once y = 2 has been reached, each new block is only another 2 rows,
+    # such that y = 3 and y = 4 is the second row,
+    # and y = 5 and y = 6 is the third row and so on.
+    # This will be saved as grid_expanded_y.
     for element in grid_elements:
         if element == grid_elements[0] and counter == 0:
+            # This loop tests whether the element we are at is = to first row.
+            # The purpose of the counter is so that if there is another row
+            # that is identical to the first row,
+            # we don't multiple that one by three as well.
             grid_expanded_y.append(element * 3)
             counter = 1
         else:
+            # If we have already done the first row,
+            # then we go into this loop & start multiplying by 2 instead of 3.
             grid_expanded_y.append(element * 2)
+
+    # Now that we have completed the row expansion,
+    # we need to do the column expansion.
+    # We will multiply each element within nested lists by three.
+    # We will do times three for all of them because we will
+    # eventually need to combine the strings horizontally.
+    # This will be saved as grid_expanded, which is a single list.
     grid_expanded = []
     for element in grid_elements:
         count += len(element)
     for element in grid_expanded_y:
         for i in range(len(element)):
             grid_expanded.append(element[i] * 3)
+
     x_values = int((count / (y_values / 2)) * 2)
+    # x_values is the maximum value for the coordinate system that we use,
+    # in which each block takes up 3 values in x.
+    # For example, the top left block is from x = 0 to x = 2,
+    # and the one next to it takes up x = 2 to x = 4.
     x_vals = int(x_values / 2)
+    # x_vals is the true number of blocks in each row in initial grid.
+
+    # Now that we have the list, we need to group it again
+    # such that it contains nested lists representing each row.
+    # This will be saved as grid_grouped_list.
+    # Note that we still have multiples within each element in nested lists.
+    # Instead of 'o' being an element, it's 'ooo', for example.
     grid_grouped_list = [grid_expanded[n:n + x_vals] for n in
                          range(0, len(grid_expanded), x_vals)]
+
+    # Next, we will need to separate out the multiples
+    # into their own elements and put them each as nested lists.
+    # For example, 'ooo' will become ['o', 'o', 'o'].
+    # This will be save into grid_grouped.
     grid_grouped = []
     for element in grid_grouped_list:
         for i in range(len(element)):
             grid_grouped.append(list(element[i]))
     count = 0
+
+    # Next, we want to get rid of all the nested lists
+    # and instead make one long list.
+    # This will be saved as grid_grouped_single_list.
     grid_grouped_single_list = []
-    for element in grid_grouped:
-        count += len(element)
     for i in range(len(grid_grouped)):
         for j in range(3):
             grid_grouped_single_list.append(grid_grouped[i][j])
-            grid_combined = grid_grouped_single_list + \
-                list(grid_grouped_single_list[:3])
-    counter = 0
-    while counter < 3:
-        grid_combined.pop()
-        counter += 1
+
+    # Next, we want to combine the elements horizontally
+    # such that at x = 2, a 'o' block neighboring an 'o' block will be 'oo'.
+    # And a 'B' block neighboring a 'o' block will be 'Bo'.
+    # We will save these as nested lists, where each list represents a row (x)
+    # and the number of the element in each list represents the column (y).
     max_rows = x_vals * 3
     grid_coords = []
     row_cnt = 0
     row = []
-    for i, letter in enumerate(grid_combined):
+    for i, letter in enumerate(grid_grouped_single_list):
         if i > (row_cnt + 1) * max_rows - 1:
             if row != []:
+                # Once row is complete, we append entire row to grid_coords.
                 grid_coords.append(row)
                 row = []
+                # We blank the row again to start working on the next row,
+                # and we increase row count by 1.
                 row_cnt += 1
         if i != (row_cnt * max_rows) and i % 3 == 0:
+            # Through trial and error, we see that we need this loop.
+            # This loop is crucial because it makes the appending skip over
+            # the string that we have already combined.
+            # For example, 'o', 'o', 'o', 'B', 'B', 'B', 'x', 'x', 'x'
+            # ends up being 'o', 'o', 'oB', 'B', 'B', 'Bx', 'x', 'x'.
+            # This is incorrect because it has two B's where
+            # it should only have 1 B to represent the middle of the block.
             pass
         elif i in list(range(row_cnt * max_rows + 2,
                              (row_cnt + 1) * max_rows - 1, 3)):
-            temp = grid_combined[i] + grid_combined[i + 1]
+            # If we are at the side of the block,
+            # we want to add strings together.
+            # For example, we have 'o', 'o', 'o', 'B', 'B', 'B' as first row,
+            # representing an 'o' block next to a 'B' block.
+            # We want to combine the 2nd element(starting count at 0)
+            # with the 3rd element. This results in 'o', 'o', 'oB', 'B', 'B'.
+            # We repeat this in increments of 3 until we are 2 counts
+            # away from the rightmost edge of the grid.
+            # We save the strings to temp and then append temp to the row.
+            temp = grid_grouped_single_list[i] \
+                + grid_grouped_single_list[i + 1]
             row.append(temp)
         else:
-            temp = grid_combined[i]
+            # If we are not at the sides of the block,
+            # then we are in the middle.
+            # In this case, we just append the original element
+            # because we are not touching another block.
+            temp = grid_grouped_single_list[i]
             row.append(temp)
     grid_coords.append(row)
-    print(grid_coords)
-    print('\n')
+
+    # Lastly, we want to consider when the blocks are touching
+    # ie. (share a side) in the y direction,
+    # meaning that one is above the other and they share that y coordinate.
+    # We incorporate this into grid_coords, which is our final output.
     try:
         for i in range(len(grid_coords)):
             if i % 2 == 0 and i != 0:
-                # print(grid_coords[i])
+                # If the y value is even and we are not at 0
+                # (since Python registers 0 to be even),
+                # then we want to add the string in the row above
+                # (but at same y value)
+                # to the string in the row below.
                 for j in range(1, x_values):
                     grid_coords[i][j] = grid_coords[i - 1][j] + \
                         grid_coords[i + 1][j]
     except IndexError:
+        # This loop results in an error,
+        # but it does not prevent the code from getting the correct answer.
         print('Grid completed!')
     print(grid_coords)
+    # Note: the corners, where there are 4 blocks touching,
+    # are incorrectly generated by this code.
+    # However, the laser will never pass through the corners,
+    # so this is not an issue for solving the grid.
     return grid_coords
+
 
 def as_string(seq_of_rows):
     '''
