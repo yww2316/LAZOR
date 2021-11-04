@@ -63,6 +63,7 @@ class bffTest(unittest.TestCase):
         Checks to make sure that the grid coordinates are outputted
         correctly by the define_grid function.
         '''
+        P, A, B, C, L, Grid = self.parseddata
         self.assertEqual(define_grid(Grid), self.define_grid,
                          'The grid coordinates were not generated correctly.')
 
