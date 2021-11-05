@@ -1,7 +1,5 @@
-from os import X_OK
 import unittest
 from SolveLAZOR import *
-from SolveLAZOR import Block
 
 
 class bffTest(unittest.TestCase):
@@ -16,7 +14,27 @@ class bffTest(unittest.TestCase):
         self.opaque = (0, 0)
         self.refract = (-1, 1, 1, 1)
         self.block = (-1, 1)
-        self.define_grid = [['o', 'o', 'oB', 'B', 'Bx', 'x', 'xo', 'o', 'oo', 'o', 'o'], ['o', 'o', 'oB', 'B', 'Bx', 'x', 'xo', 'o', 'oo', 'o', 'o'], ['o', 'oo', 'oBoo', 'Bo', 'Bxoo', 'xo', 'xooo', 'oo', 'oooo', 'oo', 'o'], ['o', 'o', 'oo', 'o', 'oo', 'o', 'oo', 'o', 'oo', 'o', 'o'], ['o', 'oo', 'ooox', 'ox', 'ooxo', 'oo', 'oooo', 'oo', 'oooo', 'oo', 'o'], ['o', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'oo', 'o', 'o'], ['o', 'oo', 'oxox', 'xx', 'xoxo', 'oo', 'oooo', 'oo', 'ooox', 'ox', 'o'], ['o', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'ox', 'x', 'x'], ['o', 'oo', 'oxoo', 'xo', 'xoox', 'ox', 'ooxx', 'ox', 'oxxo', 'xo', 'x'], ['o', 'o', 'oo', 'o', 'ox', 'x', 'xx', 'x', 'xo', 'o', 'o'], ['o', 'oB', 'ooBo', 'oo', 'oxox', 'xx', 'xxxo', 'xo', 'xooo', 'oo', 'o'], ['B', 'B', 'Bo', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'o'], ['B', 'B', 'Bo', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'o']]
+        self.define_grid =\
+            [['o', 'o', 'oB', 'B', 'Bx', 'x', 'xo', 'o', 'oo', 'o', 'o'],
+                ['o', 'o', 'oB', 'B', 'Bx', 'x', 'xo', 'o', 'oo', 'o', 'o'],
+                ['o', 'oo', 'oBoo', 'Bo', 'Bxoo', 'xo', 'xooo', 'oo', 'oooo',
+                 'oo', 'o'],
+                ['o', 'o', 'oo', 'o', 'oo', 'o', 'oo', 'o', 'oo', 'o', 'o'],
+                ['o', 'oo', 'ooox', 'ox', 'ooxo', 'oo', 'oooo', 'oo', 'oooo',
+                 'oo', 'o'],
+                ['o', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'oo', 'o', 'o'],
+                ['o', 'oo', 'oxox', 'xx', 'xoxo', 'oo', 'oooo', 'oo', 'ooox',
+                 'ox', 'o'],
+                ['o', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'ox', 'x', 'x'],
+                ['o', 'oo', 'oxoo', 'xo', 'xoox', 'ox', 'ooxx', 'ox', 'oxxo',
+                 'xo', 'x'],
+                ['o', 'o', 'oo', 'o', 'ox', 'x', 'xx', 'x', 'xo', 'o', 'o'],
+                ['o', 'oB', 'ooBo', 'oo', 'oxox', 'xx', 'xxxo', 'xo', 'xooo',
+                 'oo', 'o'],
+                ['B', 'B', 'Bo', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'o'],
+                ['B', 'B', 'Bo', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'o']]
+        self.Grid = ['o B x o o', 'o o o o o', 'o x o o o', 'o x o o x',
+                     'o o x x o', 'B o x o o']
 
     def test_Check_Parsing(self):
         '''
@@ -64,8 +82,7 @@ class bffTest(unittest.TestCase):
         Checks to make sure that the grid coordinates are outputted
         correctly by the define_grid function.
         '''
-        Grid = ['o B x o o', 'o o o o o', 'o x o o o', 'o x o o x', 'o o x x o', 'B o x o o']
-        self.assertEqual(define_grid(Grid), self.define_grid,
+        self.assertEqual(define_grid(self.Grid), self.define_grid,
                          'The grid coordinates were not generated correctly.')
 
     def test_Solve(self):

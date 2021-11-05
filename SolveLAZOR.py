@@ -2,7 +2,6 @@
 Initial python file for reading in .bff files for their information.
 '''
 
-import numpy as np
 import random
 
 
@@ -207,6 +206,7 @@ def pos_chk(x, y, width, height):
             Whether the coordiantes are valid (True) or not (False).
     '''
     return x >= 0 and x <= width and y >= 0 and y <= height
+
 
 def define_grid(Grid):
     '''
@@ -489,7 +489,6 @@ def output_random_grid(Grid, A, B, C, Repeat_Grid):
     Output_Grid = []
     for i in Grid:
         Random_Grid.append(i.split(" "))
-    print(Random_Grid)
     while A > 0 or B > 0 or C > 0:
         list1 = random.randrange(len(Random_Grid))
         list2 = random.randrange(len(Random_Grid[0]))
@@ -550,10 +549,10 @@ if __name__ == '__main__':
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
-    print(A, B, C, Grid)
+    # print(A, B, C, Grid)
     ans = Block('o', 1, 1, 1)
     a = ans('o', 1, 0, 1)
-    print(a)
+    # print(a)
     print('')
     print('Initial Grid:')
     print('')
