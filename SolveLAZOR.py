@@ -397,21 +397,23 @@ def as_string(seq_of_rows):
 
 
 def laser_path(P, L, new_grid):
-
-    '''currently a trial of the path the laser takes'''
+    # updated Nov 5, 2:00 am incorporating A blocks
 
     # make the intersection points into a list of tuples
     intersect_pts = []
     for pt in P:
         intersect_pts.append(tuple(pt))
-
     # starting position (user input)
     position = tuple(L[0][:2])
     # starting velocity (user input)
     vx = L[0][2]
     vy = L[0][3]
+    new_vx = L[0][2]
+    new_vy = L[0][3]
     # list of all the positions the laser passed
     laser_pos = [position]
+    # list of blocks hit
+    block_hit = ['s']
 
     grid_h = len(new_grid)
     grid_w = len(new_grid[0])
@@ -422,7 +424,25 @@ def laser_path(P, L, new_grid):
     in_grid = True
     # did laser pass all the points
     all_touched = False
-    while not all_touched:
+    solved = 'solved'
+    # positions repeated?
+    no_repeat = True
+    # velocity positive?
+    vel_chk = True
+
+    # get current laser position
+    lz_cur = laser_pos[-1]
+    old_x = lz_cur[0]
+    old_y = lz_cur[1]
+
+    # check ahead for first step
+    if new_grid[old_y + vy][old_x + vx] == 'oo' or new_grid[old_y + vy][old_x + vx] == 'o':
+        new_x = old_x + vx
+        new_y = old_y + vy
+        laser_pos.append((new_x, new_y))
+        block_hit.append(new_grid[old_y + vy][old_x + vx])
+
+    while not all_touched and no_repeat and vel_chk:
         if in_grid:
             # get current laser position
             lz_cur = laser_pos[-1]
@@ -436,27 +456,28 @@ def laser_path(P, L, new_grid):
                 hit = 0
 
             # get the change and update new position
-            ch = change(new_grid[old_y][old_x], hit, vx, vy)
+            ch = change(new_grid[old_y][old_x], hit, new_vx, new_vy)
 
-            # the new x position after stepping
-            if ch[0] == 0 and ch[1] == 0:  # if hits opaque
-                # random neg num so doesn't come back into loop
-                new_x = -1
-                new_y = -1
-            else:
-                new_x = old_x + ch[0]
-                new_y = old_y + ch[1]
+            # update velocity (the velocity has already been updated in block class)
+            new_vx = ch[0]
+            new_vy = ch[1]
+            new_x = old_x + new_vx
+            new_y = old_y + new_vy
+            block_hit.append(new_grid[new_y][new_x])
+
+            # need to check this with B block
+            if vx == 0 and vy == 0:
+                vel_chk = False
 
             # append into the position list for laser
             laser_pos.append((new_x, new_y))
-            in_grid = pos_chk(
-                laser_pos[-1][0], laser_pos[-1][1], grid_w - 1, grid_h - 1)
-            # laser touched all intersect pts
-            all_touched = all(elem in laser_pos for elem in intersect_pts)
+            in_grid = pos_chk(laser_pos[-1][0], laser_pos[-1][1], grid_w - 2, grid_h - 2)
+            no_repeat = laser_pos[-1] != laser_pos[-2]
+
         else:
             all_touched = True  # exit loop
-            laser_pos = 'not solved'  # show did not touch all pts
-    return laser_pos
+            solved = 'not solved'
+    return laser_pos, solved
 
 
 def output_random_grid(Grid, A, B, C, Repeat_Grid):
