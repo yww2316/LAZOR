@@ -396,13 +396,27 @@ def as_string(seq_of_rows):
                      for row in seq_of_rows)
 
 
-def laser_path(P, L, new_grid):
-    # updated Nov 5, 2:00 am incorporating A blocks
+def path_loop(L, new_grid):
 
-    # make the intersection points into a list of tuples
-    intersect_pts = []
-    for pt in P:
-        intersect_pts.append(tuple(pt))
+    '''
+    Returns a list of one path taken by the laser. Goes hand-in-hand with
+    the function get_all_paths_taken as this function
+    does not contain the additional path from a C block split.
+
+    **Parameters**
+        Grid: *list
+            Initial Grid
+        L: *list
+            Lazor position and velocity. First two numbers are where the
+            the laser starts, and the last two numbers are the
+            x and y velocities.
+    **Returns**
+        laser_pos: *list
+            A list of all the positions taken
+        refract_list: *list
+            A list of the laser position and velocity after hitting the C block
+    '''
+
     # starting position (user input)
     position = tuple(L[0][:2])
     # starting velocity (user input)
@@ -412,21 +426,19 @@ def laser_path(P, L, new_grid):
     new_vy = L[0][3]
     # list of all the positions the laser passed
     laser_pos = [position]
-    # list of blocks hit
-    block_hit = ['s']
 
     grid_h = len(new_grid)
     grid_w = len(new_grid[0])
 
+    # additional list for refract block
+    refract_list = []
+
     change = Block('A', 1, 1, 1)  # block type, hit, vx, vy
+    print('start pos:', position, 'start velocity:', vx, vy)
 
     # if position within block
     in_grid = True
-    # did laser pass all the points
-    all_touched = False
-    solved = 'solved'
-    # positions repeated?
-    no_repeat = True
+
     # velocity positive?
     vel_chk = True
 
@@ -436,48 +448,124 @@ def laser_path(P, L, new_grid):
     old_y = lz_cur[1]
 
     # check ahead for first step
-    if new_grid[old_y + vy][old_x + vx] == 'oo' or new_grid[old_y + vy][old_x + vx] == 'o':
-        new_x = old_x + vx
-        new_y = old_y + vy
-        laser_pos.append((new_x, new_y))
-        block_hit.append(new_grid[old_y + vy][old_x + vx])
+    print('old_x:', old_x, 'old_y:', old_y)
+    in_grid = pos_chk(old_y + vy, old_x + vx, grid_w - 2, grid_h - 2)
+    if in_grid:
+        if new_grid[old_y + vy][old_x + vx] == 'oo' or new_grid[old_y + vy][old_x + vx] == 'o':
+            new_x = old_x + vx
+            new_y = old_y + vy
+            laser_pos.append((new_x, new_y))
 
-    while not all_touched and no_repeat and vel_chk:
-        if in_grid:
-            # get current laser position
-            lz_cur = laser_pos[-1]
-            old_x = lz_cur[0]
-            old_y = lz_cur[1]
+    while in_grid:
+        # get current laser position
+        lz_cur = laser_pos[-1]
+        old_x = lz_cur[0]
+        old_y = lz_cur[1]
 
-            # check hit top/bottom (0) or left/right (1) - x odd or even
-            if old_x % 2 == 0:   # if even, left/right
-                hit = 1
-            else:
-                hit = 0
+        # check hit top/bottom (0) or left/right (1) - x odd or even
+        if old_x % 2 == 0:   # if even, left/right
+            hit = 1
+        else:
+            hit = 0
 
-            # get the change and update new position
-            ch = change(new_grid[old_y][old_x], hit, new_vx, new_vy)
+        # get the change and update new position
+        ch = change(new_grid[old_y][old_x], hit, new_vx, new_vy)
 
+        if len(ch) == 2: # A or B block
             # update velocity (the velocity has already been updated in block class)
             new_vx = ch[0]
             new_vy = ch[1]
             new_x = old_x + new_vx
             new_y = old_y + new_vy
-            block_hit.append(new_grid[new_y][new_x])
 
             # need to check this with B block
             if vx == 0 and vy == 0:
                 vel_chk = False
+                print('hit B')
 
-            # append into the position list for laser
-            laser_pos.append((new_x, new_y))
-            in_grid = pos_chk(laser_pos[-1][0], laser_pos[-1][1], grid_w - 2, grid_h - 2)
-            no_repeat = laser_pos[-1] != laser_pos[-2]
+        # will have two velocity pairs for C
+        if len(ch) == 4:
+            new_vx = ch[0]
+            new_vy = ch[1]
+            extra_vx = ch[2]
+            extra_vy = ch[3]
 
-        else:
-            all_touched = True  # exit loop
-            solved = 'not solved'
-    return laser_pos, solved
+            new_x = old_x + new_vx
+            new_y = old_y + new_vy
+            extra_x = old_x + extra_vx
+            extra_y = old_y + extra_vy
+            # append into the extra refract list
+            refract_list.append([extra_x, extra_y, extra_vx, extra_vy])
+            print([extra_x, extra_y, extra_vx, extra_vy])
+
+        # append into the position list for laser
+        laser_pos.append((new_x, new_y))
+        in_grid = pos_chk(laser_pos[-1][0], laser_pos[-1][1], grid_w - 2, grid_h - 2)
+
+    print('laser_pos',laser_pos, 'refract_list', refract_list)
+    return laser_pos, refract_list
+
+
+def get_all_paths_taken(L, new_grid):
+
+    '''
+    contain the additional path from a C block split.
+    **Parameters**
+        Grid: *list
+            Initial Grid
+        L: *list
+            Lazor position and velocity. First two numbers are where the
+            the laser starts, and the last two numbers are the
+            x and y velocities.
+    **Returns**
+        joined_final: *list
+            A list of all the positions taken
+    '''
+
+    total_pos = []
+    a, b = path_loop(L, new_grid)
+    total_pos.append(a)
+
+    # while there are new paths from refract (C) blocks
+    while len(b) != 0:
+        print('old b:', b)
+        a, b = path_loop(b, new_grid)
+        total_pos.append(a)
+        print('new b:', b)
+
+    # join the refract nested list
+    joined_final = [j for i in total_pos for j in i]
+    print(joined_final)
+    return joined_final
+
+
+def grid_outcome(P, L, new_grid):
+
+    '''
+    Returns whether all the points have been hit by the laser
+    **Parameters**
+        P: *list
+            Points for laser to intersect
+        Grid: *list
+            Initial Grid
+        L: *list
+            Lazor position and velocity. First two numbers are where the
+            the laser starts, and the last two numbers are the
+            x and y velocities.
+    **Returns**
+        all_touched: *bool
+            whether all points were touched
+    '''
+
+    # make the intersection points into a list of tuples
+    joined_final = get_all_paths_taken(L, new_grid)
+    intersect_pts = []
+    for pt in P:
+        intersect_pts.append(tuple(pt))
+
+    # laser touched all intersect pts
+    all_touched = all(elem in joined_final for elem in intersect_pts)
+    return all_touched
 
 
 def output_random_grid(Grid, A, B, C, Repeat_Grid):
