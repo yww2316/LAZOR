@@ -426,11 +426,12 @@ def path_loop(L, new_grid):
     new_vy = L[0][3]
     # list of all the positions the laser passed
     laser_pos = [position]
-
+    # list of the block type passed
+    blk_type = ['o','o','o']
     grid_h = len(new_grid)
     grid_w = len(new_grid[0])
 
-    # additional list for refract block
+        # additional list for refract block
     refract_list = []
 
     change = Block('A', 1, 1, 1)  # block type, hit, vx, vy
@@ -450,17 +451,20 @@ def path_loop(L, new_grid):
     # check ahead for first step
     print('old_x:', old_x, 'old_y:', old_y)
     in_grid = pos_chk(old_y + vy, old_x + vx, grid_w - 2, grid_h - 2)
-    if in_grid:
-        if new_grid[old_y + vy][old_x + vx] == 'oo' or new_grid[old_y + vy][old_x + vx] == 'o':
-            new_x = old_x + vx
-            new_y = old_y + vy
-            laser_pos.append((new_x, new_y))
-
-    while in_grid:
+#     if in_grid:
+#         if new_grid[old_y + vy][old_x + vx] == 'oo' or new_grid[old_y + vy][old_x + vx] == 'o':
+#             new_x = old_x + vx
+#             new_y = old_y + vy
+#             laser_pos.append((new_x, new_y))
+#             blk_type.append(new_grid[old_y + vy][old_x + vx])
+            
+    while in_grid and vel_chk:
         # get current laser position
         lz_cur = laser_pos[-1]
         old_x = lz_cur[0]
         old_y = lz_cur[1]
+        
+        blk_type.append(new_grid[old_y + vy][old_x + vx])
 
         # check hit top/bottom (0) or left/right (1) - x odd or even
         if old_x % 2 == 0:   # if even, left/right
@@ -470,6 +474,8 @@ def path_loop(L, new_grid):
 
         # get the change and update new position
         ch = change(new_grid[old_y][old_x], hit, new_vx, new_vy)
+        blk_type.append(new_grid[old_y][old_x])
+        print('type:', new_grid[old_y][old_x])
 
         if len(ch) == 2: # A or B block
             # update velocity (the velocity has already been updated in block class)
@@ -484,7 +490,7 @@ def path_loop(L, new_grid):
                 print('hit B')
 
         # will have two velocity pairs for C
-        if len(ch) == 4:
+        elif len(ch) == 4 and 'C' not in blk_type[-3]:
             new_vx = ch[0]
             new_vy = ch[1]
             extra_vx = ch[2]
@@ -496,13 +502,23 @@ def path_loop(L, new_grid):
             extra_y = old_y + extra_vy
             # append into the extra refract list
             refract_list.append([extra_x, extra_y, extra_vx, extra_vy])
-            print([extra_x, extra_y, extra_vx, extra_vy])
+
+        else:  # perform the len(ch) == 2 code but with diff velocity
+            
+            new_vx = ch[2] # this is the extra vx value
+            new_vy = ch[3]
+            new_x = old_x + new_vx
+            new_y = old_y + new_vy
+
+            # need to check this with B block
+            if new_vx == 0 and new_vy == 0:
+                vel_chk = False
+                print('hit B')
 
         # append into the position list for laser
         laser_pos.append((new_x, new_y))
         in_grid = pos_chk(laser_pos[-1][0], laser_pos[-1][1], grid_w - 2, grid_h - 2)
 
-    print('laser_pos',laser_pos, 'refract_list', refract_list)
     return laser_pos, refract_list
 
 
