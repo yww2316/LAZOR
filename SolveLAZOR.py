@@ -479,7 +479,7 @@ def path_loop(L, new_grid):
             new_y = old_y + new_vy
 
             # need to check this with B block
-            if vx == 0 and vy == 0:
+            if new_vx == 0 and new_vy == 0:
                 vel_chk = False
                 print('hit B')
 
@@ -674,3 +674,9 @@ if __name__ == '__main__':
     print('')
     print("\n".join(map(" ".join, solved)))
     # Number of laser grid points is 2N*2N
+    
+    # how to use the grid_outcome function
+    Repeat_Grid = []
+    result, Repeat_Grid = output_random_grid(Grid, A, B, C, Repeat_Grid)
+    new_grid = define_grid(result)
+    grid_outcome(P, L, new_grid)
