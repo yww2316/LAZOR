@@ -672,10 +672,10 @@ def solve_lazor(P, A, B, C, L, Grid):
             if Output_Grid in i:
                 continue
         Solution_Flag = 1
+        new_grid = define_grid(Output_Grid)
+        Solution_Flag = grid_outcome(P, L, new_grid)
 
-    Solved_Grid = Output_Grid
-
-    return Solved_Grid
+    return Output_Grid
 
 
 if __name__ == '__main__':
