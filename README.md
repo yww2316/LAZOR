@@ -1,2 +1,2 @@
 # LAZOR
-The github repository for the LAZOR Project
+The github repository for the LAZOR Project. Once one clones this github repository, one can use the SolveLAZOR.py file to solve any LAZOR puzzle located in the bff_files folder. To change the .bff file solved, one must change the bfffile variable under if __name__ == '__main__' to be 'bff_files\\desired_file' where desired_file is the name of the desired .bff file. Once one runs the python file, the terminal will output the initial grid, the solved grid, and the time taken to find the solved grid. The solved grid output will include the positions and blocks, represented by A, B, C, that should be at those given positions. The format of the solved grid will look very similiar to the grid given in the .bff file.
