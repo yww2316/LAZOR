@@ -620,7 +620,6 @@ def output_random_grid(Grid, A, B, C, Repeat_Grid):
             The grids that have already been tried
             are saved here in a list.
     '''
-
     Random_Grid = []
     Output_Grid = []
     for i in Grid:
@@ -672,20 +671,23 @@ def solve_lazor(P, A, B, C, L, Grid):
         for i in Repeat_Grid:
             if Output_Grid in i:
                 continue
-        
         new_grid = define_grid(Output_Grid)
         Solution_Flag = grid_outcome(P, L, new_grid)
+        time_end = time.time()
+        if time_end-start > 120:
+            print('This puzzle cannot be solved in two minutes.')
+            break
 
     return Output_Grid
 
 
 if __name__ == '__main__':
     start = time.time()
-    bfffile = 'bff_files\\dark_1.bff'
+    bfffile = 'bff_files\\tiny_5.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
-    # print(A, B, C, Grid)
+    # print(P, A, B, C, L, Grid)
     ans = Block('o', 1, 1, 1)
     a = ans('o', 1, 0, 1)
     print('')
@@ -714,5 +716,5 @@ if __name__ == '__main__':
     # result, Repeat_Grid = output_random_grid(Grid, A, B, C, Repeat_Grid)
     # convert the orig grid to our grid format
     # new_grid = define_grid(result)
-    # print('all positions the laser passed:', get_all_paths_taken(L, new_grid))
+    # print('all positions passed:', get_all_paths_taken(L, new_grid))
     # print('passed the game?', grid_outcome(P, L, new_grid))
