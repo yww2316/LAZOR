@@ -397,7 +397,7 @@ def as_string(seq_of_rows):
                      for row in seq_of_rows)
 
 
-def path_loop(L, loc, new_grid):
+def path_loop(L, new_grid):
 
     '''
     Returns a list of one path taken by the laser. Goes hand-in-hand with
@@ -409,8 +409,7 @@ def path_loop(L, loc, new_grid):
             Lazor position and velocity. First two numbers are where the
             the laser starts, and the last two numbers are the
             x and y velocities.
-        loc: *list
-            unused position and velocity
+
         new_grid: *list
             modified intital grid
 
@@ -419,18 +418,13 @@ def path_loop(L, loc, new_grid):
             A list of all the positions taken
         refract_list: *list
             A list of the laser position and velocity after hitting the C block
-        loc: * list
-            A list of unused position and velocity
     '''
 
     # starting position (user input)
-    position = tuple(loc[0][:2])
+    position = tuple(L[0][:2])
     # starting velocity (user input)
-    vx = loc[0][2]
-    vy = loc[0][3]
-
-    # remove the used position and velocities from list
-    loc.pop(0)
+    vx = L[0][2]
+    vy = L[0][3]
 
     # list of all the positions the laser passed
     laser_pos = [position]
@@ -528,10 +522,10 @@ def path_loop(L, loc, new_grid):
         in_grid = pos_chk(
             laser_pos[-1][0], laser_pos[-1][1], grid_w - 2, grid_h - 2)
 
-    return laser_pos, refract_list, loc
+    return laser_pos, refract_list
 
 
-def get_all_paths_taken(L, loc, new_grid):
+def get_all_paths_taken(L, new_grid):
 
     '''
     contain the additional path from a C block split.
@@ -540,8 +534,6 @@ def get_all_paths_taken(L, loc, new_grid):
             Lazor position and velocity. First two numbers are where the
             the laser starts, and the last two numbers are the
             x and y velocities.
-        loc: *list
-            unused position and velocity
 
         new_grid: *list
             modified intital grid
@@ -550,11 +542,11 @@ def get_all_paths_taken(L, loc, new_grid):
         result: *list
             A list of all the positions taken
     '''
+
     total_pos = []
-    a, b, c = path_loop(L, loc, new_grid)
+    a, b = path_loop(L, new_grid)
     old_a = a
     old_b = b
-    loc = c
     total_pos.append(old_a)
 
     # while there are new paths from refract (C) blocks
@@ -568,10 +560,10 @@ def get_all_paths_taken(L, loc, new_grid):
     # take out the negatives
     result = [i for i in joined_final if i[0] >= 0 and i[1] >= 0]
 
-    return result, loc
+    return result
 
 
-def grid_outcome(P, L, loc, new_grid):
+def grid_outcome(P, L, new_grid):
 
     '''
     Returns whether all the points have been hit by the laser
@@ -583,8 +575,6 @@ def grid_outcome(P, L, loc, new_grid):
             Lazor position and velocity. First two numbers are where the
             the laser starts, and the last two numbers are the
             x and y velocities.
-        loc: *list
-            unused position and velocity
 
         new_grid: *list
             modified intital grid
@@ -593,27 +583,24 @@ def grid_outcome(P, L, loc, new_grid):
         all_touched: *bool
             whether all points were touched
     '''
-    total_pos = []
-    remain = loc
-    joined = get_all_paths_taken(L, loc, new_grid)
-    total_pos.append(joined[0])
-
-    for i in range(len(remain)):
-        joined, remain = get_all_paths_taken(remain, loc, new_grid)
-        total_pos.append(joined)
-        i += 1
-    joined_final = [b for a in total_pos for b in a]
+    # include all lasers (some files have multiple starting lasers)
+    joined_all = []
+    for ls in L:
+        join = get_all_paths_taken([ls], new_grid)
+        joined_all.append(join)
 
     # make the intersection points into a list of tuples
     intersect_pts = []
     for pt in P:
         intersect_pts.append(tuple(pt))
-    # delete repeats
-    no_repeat = list(set([x for x in joined_final]))
 
+    # flatten lists
+    joined_final = [j for i in joined_all for j in i]
+    # delete duplicates
+    no_repeat = list(set([x for x in joined_final]))
+    # print(no_repeat)
     # laser touched all intersect pts
     all_touched = all(elem in no_repeat for elem in intersect_pts)
-
     return all_touched
 
 
@@ -726,17 +713,3 @@ if __name__ == '__main__':
     end = time.time()
     print('Time Elapsed: '+str(end-start)+' seconds')
     # Number of laser grid points is 2N*2N
-
-    # how to use the grid_outcome function
-    # import file
-    # bfffile = 'bff_files/yarn_5.bff'
-    # read in
-    # P, A, B, C, L, Grid = ReadInbff(bfffile)
-    # declare repeat_grid once
-    # Repeat_Grid = []
-    # randomly place blocks on grid
-    # result, Repeat_Grid = output_random_grid(Grid, A, B, C, Repeat_Grid)
-    # convert the orig grid to our grid format
-    # new_grid = define_grid(result)
-    # print('all positions passed:', get_all_paths_taken(L, new_grid))
-    # print('passed the game?', grid_outcome(P, L, new_grid))
