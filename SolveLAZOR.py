@@ -4,6 +4,7 @@ Initial python file for reading in .bff files for their information.
 
 import random
 import time
+import collections
 
 
 def ReadInbff(bfffile):
@@ -360,18 +361,18 @@ def define_grid(Grid):
     try:
         for i in range(len(grid_coords)):
             if i % 2 == 0 and i != 0:
-    #             # If the y value is even and we are not at 0
-    #             # (since Python registers 0 to be even),
-    #             # then we want to add the string in the row above
-    #             # (but at same y value)
-    #             # to the string in the row below.
+                # If the y value is even and we are not at 0
+                # (since Python registers 0 to be even),
+                # then we want to add the string in the row above
+                # (but at same y value)
+                # to the string in the row below.
                 for j in range(1, x_values):
                     grid_coords[i][j] = grid_coords[i - 1][j] + \
                         grid_coords[i + 1][j]
     except IndexError:
-    #     # This loop results in an error,
-    #     # but it does not prevent the code from getting the correct answer.
-        #print('Grid completed!')
+        # This loop results in an error,
+        # but it does not prevent the code from getting the correct answer.
+        # print('Grid completed!')
         pass
     # print(grid_coords)
     # Note: the corners, where there are 4 blocks touching,
@@ -605,7 +606,7 @@ def grid_outcome(P, L, new_grid):
     return all_touched
 
 
-def output_random_grid(Grid, A, B, C, Repeat_Grid):
+def output_random_grid(Grid, A, B, C):
     '''
     Function for adding all possible block elements to a random grid.
 
@@ -626,9 +627,6 @@ def output_random_grid(Grid, A, B, C, Repeat_Grid):
         Output_Grid: *list
             The randomized grid with A, B, and C placed at random positions
             where o used to be.
-        Repeat_Grid: *list
-            The grids that have already been tried
-            are saved here in a list.
     '''
     Random_Grid = []
     Output_Grid = []
@@ -649,8 +647,12 @@ def output_random_grid(Grid, A, B, C, Repeat_Grid):
                 C -= 1
     for i in Random_Grid:
         Output_Grid.append(" ".join(i))
-    Repeat_Grid.append(Output_Grid)
-    return Output_Grid, Repeat_Grid
+    return Output_Grid
+
+
+def allUnique(x):
+    seen = list()
+    return not any(i in seen or seen.append(i) for i in x)
 
 
 def solve_lazor(P, A, B, C, L, Grid):
@@ -676,26 +678,25 @@ def solve_lazor(P, A, B, C, L, Grid):
     Solution_Flag = 0
     Repeat_Grid = []
     while Solution_Flag == 0:
-        Output_Grid, Repeat_Grid = output_random_grid(Grid, A, B, C,
-                                                      Repeat_Grid)
-        for i in Repeat_Grid:
-            if Output_Grid in i:
-                continue
+        Output_Grid = output_random_grid(Grid, A, B, C)
+        if Output_Grid in Repeat_Grid:
+            continue
+        else:
+            Repeat_Grid.append(Output_Grid)
         new_grid = define_grid(Output_Grid)
         # print(as_string(new_grid))
         Solution_Flag = grid_outcome(P, L, new_grid)
         # print('wow')
-        time_end = time.time()
-        if time_end-start > 120:
-            print('This puzzle cannot be solved in two minutes.')
-            break
-
+        # time_end = time.time()
+        # if time_end-start > 120:
+        #     print('This puzzle cannot be solved in two minutes.')
+        #     break
     return Output_Grid
 
 
 if __name__ == '__main__':
     start = time.time()
-    bfffile = 'bff_files\\mad_7.bff'
+    bfffile = 'bff_files\\numbered_6.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
