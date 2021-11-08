@@ -676,7 +676,7 @@ def solve_lazor(P, A, B, C, L, Grid):
 
     '''
     Solution_Flag = 0
-    Repeat_Grid = []
+    Repeat_Grid = collections.deque([])
     while Solution_Flag == 0:
         Output_Grid = output_random_grid(Grid, A, B, C)
         if Output_Grid in Repeat_Grid:
@@ -684,23 +684,23 @@ def solve_lazor(P, A, B, C, L, Grid):
         else:
             Repeat_Grid.append(Output_Grid)
         new_grid = define_grid(Output_Grid)
+        # print(new_grid)
         # print(as_string(new_grid))
         Solution_Flag = grid_outcome(P, L, new_grid)
         # print('wow')
-        # time_end = time.time()
-        # if time_end-start > 120:
-        #     print('This puzzle cannot be solved in two minutes.')
-        #     break
+        time_end = time.time()
+        if time_end-start > 120:
+            print('This puzzle cannot be solved in two minutes.')
+            break
     return Output_Grid
 
 
 if __name__ == '__main__':
     start = time.time()
-    bfffile = 'bff_files\\numbered_6.bff'
+    bfffile = 'bff_files\\yarn_5.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
-    # print(P, A, B, C, L, Grid)
     ans = Block('o', 1, 1, 1)
     a = ans('o', 1, 0, 1)
     print('')
