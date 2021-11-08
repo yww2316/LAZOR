@@ -5,7 +5,7 @@ Initial python file for reading in .bff files for their information.
 import random
 import time
 import collections
-
+import itertools
 
 def ReadInbff(bfffile):
     '''
@@ -479,16 +479,6 @@ def path_loop(L, new_grid):
         else:
             hit = 0
 
-        # if laser is stuck between 2 A blocks
-        # if hit == 1:
-        #     if new_grid[old_y][old_x-1] == 'A'\
-        #          and new_grid[old_y][old_x] == 'A':
-        #         break
-        # if hit == 0:
-        #     if new_grid[old_y-1][old_x] == 'A'\
-        #          and new_grid[old_y][old_x] == 'A':
-        #         break
-
         # get the change and update new position
         ch = change(new_grid[old_y][old_x], hit, vx, vy)
         blk_type.append(new_grid[old_y][old_x])
@@ -637,42 +627,61 @@ def output_random_grid(Grid, A, B, C):
             The randomized grid with A, B, and C placed at random positions
             where o used to be.
     '''
+    start = time.time()
     Random_Grid = []
     Output_Grid = []
+    Possible_Pos = []
     # Format Grid into Random_Grid for easier indexing.
     for i in Grid:
         Random_Grid.append(i.split(" "))
-    # Put blocks in random positions here.
-    while A > 0 or B > 0 or C > 0:
-        # Pick two random points for x and y
-        list1 = random.randrange(len(Random_Grid))
-        list2 = random.randrange(len(Random_Grid[0]))
-        # Only put blocks in places there is an o present.
-        if Random_Grid[list1][list2] == 'o':
+    # Check for open positions
+    for r, row in enumerate(Random_Grid):
+        for c, i in enumerate(row):
+            if i is 'o':
+                Possible_Pos.append((r, c))
+    Possible_Pos = random.shuffle(Possible_Pos)
+
+    for i in itertools.permutations(Possible_Pos, A+B+C):
+        counter = 0
+        while A > 0 or B > 0 or C > 0:
+            # Only put blocks in places there is an o present.
             # Keep placing A blocks until A blocks are depleted.
             if A > 0:
-                Random_Grid[list1][list2] = 'A'
+                Random_Grid[i[counter][0]][i[counter][1]] = 'A'
                 A -= 1
             # After A blocks are depleted, place B blocks
             # until B blocks are depleted.
             elif B > 0:
-                Random_Grid[list1][list2] = 'B'
+                Random_Grid[i[counter][0]][i[counter][1]] = 'B'
                 B -= 1
             # After A and B blocks are depleted, place C blocks
             # until C blocks are depleted.
             elif C > 0:
-                Random_Grid[list1][list2] = 'C'
+                Random_Grid[i[counter][0]][i[counter][1]] = 'C'
                 C -= 1
-    # Reformat Output_Grid into the same format as Grid for later use.
-    for i in Random_Grid:
-        Output_Grid.append(" ".join(i))
+        # Change coordinate system of Output_Grid
+        for i in Random_Grid:
+            Output_Grid.append(" ".join(i))
+        new_grid = define_grid(Output_Grid)
+        if grid_outcome(P, L, new_grid):
+            break
+        else:
+            continue
+    # Print the solution grid in the terminal
+    print('')
+    print('Solution:')
+    print('')
+    print("\n".join(map(" ".join, Output_Grid)))
+    # Write the solution grid into a text file
+    with open('Solution.txt', mode="w") as outfile:
+        outfile.write('Solution:\n')
+        outfile.write('\n')
+        for s in Output_Grid:
+            outfile.write("%s\n" % s)
+    # Print the amount of time this function took to run
+    end = time.time()
+    print('Time Elapsed: '+str(end-start)+' seconds')
     return Output_Grid
-
-
-def allUnique(x):
-    seen = list()
-    return not any(i in seen or seen.append(i) for i in x)
-
 
 def solve_lazor(P, A, B, C, L, Grid):
     '''
@@ -694,6 +703,8 @@ def solve_lazor(P, A, B, C, L, Grid):
         Solved_Grid: *list
 
     '''
+    # Start a timer to keep track of how long the solve_lazor function has
+    # been running for.
     start = time.time()
     # Flag that says no working grid has been found yet.
     Solution_Flag = 0
@@ -718,16 +729,30 @@ def solve_lazor(P, A, B, C, L, Grid):
         if time_end-start > 120:
             print('This puzzle cannot be solved in two minutes.')
             break
+    # Print the solution grid in the terminal
+    print('')
+    print('Solution:')
+    print('')
+    print("\n".join(map(" ".join, Output_Grid)))
+    # Write the solution grid into a text file
+    with open('Solution.txt', mode="w") as outfile:
+        outfile.write('Solution:\n')
+        outfile.write('\n')
+        for s in Output_Grid:
+            outfile.write("%s\n" % s)
+    # Print the amount of time this function took to run
+    end = time.time()
+    print('Time Elapsed: '+str(end-start)+' seconds')
     return Output_Grid
 
 
 if __name__ == '__main__':
-    bfffile = 'bff_files\\yarn_5.bff'
+    bfffile = 'bff_files\\mad_7.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
-    print(P)
-    print(L)
+    print(Grid)
+    output_random_grid(Grid, A, B, C)
     solution_grid = ['o B x o o', 'o A o o o', 'A x o o A', 'o x A o x',
                      'A o x x A', 'B A x A o']
     solution_grid_num = ['B o o', 'A x x', 'B o A', 'A x o', 'B o o']
@@ -742,17 +767,3 @@ if __name__ == '__main__':
     print('')
     print("\n".join(map(" ".join, Grid)))
     solved = solve_lazor(P, A, B, C, L, Grid)
-    # new_grid = define_grid(Grid)
-    # print(as_string(new_grid))
-    print('')
-    print('Solution:')
-    print('')
-    print("\n".join(map(" ".join, solved)))
-    with open('Solution.txt', mode="w") as outfile:
-        outfile.write('Solution:\n')
-        outfile.write('\n')
-        for s in solved:
-            outfile.write("%s\n" % s)
-    end = time.time()
-    print('Time Elapsed: '+str(end-start)+' seconds')
-    # Number of laser grid points is 2N*2N

@@ -40,7 +40,7 @@ class bffTest(unittest.TestCase):
         self.P = [[6, 9], [9, 2]]
         self.L = [[4, 1, 1, 1]]
         self.sol_grid = ['o B x o o', 'o A o o o', 'A x o o A', 'o x A o x',
-                    'A o x x A', 'B A x A o']
+                         'A o x x A', 'B A x A o']
 
     def test_Check_Parsing(self):
         '''
@@ -102,7 +102,8 @@ class bffTest(unittest.TestCase):
         '''
         Checks to make sure that grid_outcome identifies a correct solution.
         '''
-        self.assertTrue(grid_outcome(self.P, self.L, define_grid(self.sol_grid)))
+        self.assertTrue(grid_outcome(self.P, self.L,
+                                     define_grid(self.sol_grid)))
 
     def test_Solve(self):
         '''
