@@ -455,11 +455,13 @@ def path_loop(L, new_grid):
     # check ahead for first step
     # because laser reflects if its on an A block at the beginning
     # (we don't want that)
-    in_grid = pos_chk(old_y + vy, old_x + vx, grid_w - 2, grid_h - 2)
+    in_grid = pos_chk(old_x + vx, old_y + vy, grid_w - 2, grid_h - 2)
+
     vx1 = old_x + vx
     vy1 = old_y + vy
+
     if in_grid:
-        if new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o':
+        if new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o' or new_grid[vy1][vx1] == 'xo' or new_grid[vy1][vx1] == 'ox':
             new_x = vx1
             new_y = vy1
             laser_pos.append((new_x, new_y))
@@ -477,6 +479,14 @@ def path_loop(L, new_grid):
             hit = 1
         else:
             hit = 0
+
+        # if laser is stuck between 2 A blocks
+        if hit == 1:
+            if new_grid[old_y][old_x-1] == 'A' and new_grid[old_y][old_x+1] == 'A':
+                break
+        if hit == 0:
+            if new_grid[old_y-1][old_x] == 'A' and new_grid[old_y+1][old_x] == 'A':
+                break
 
         # get the change and update new position
         ch = change(new_grid[old_y][old_x], hit, vx, vy)
@@ -509,7 +519,6 @@ def path_loop(L, new_grid):
             refract_list.append([extra_x, extra_y, extra_vx, extra_vy])
 
         else:  # perform the len(ch) == 2 code
-
             vx = ch[2]  # this is the extra vx value
             vy = ch[3]
             new_x = old_x + vx
@@ -587,8 +596,8 @@ def grid_outcome(P, L, new_grid):
     '''
     # include all lasers (some files have multiple starting lasers)
     joined_all = []
-    for ls in L:
-        join = get_all_paths_taken([ls], new_grid)
+    for l in L:
+        join = get_all_paths_taken([l], new_grid)
         joined_all.append(join)
 
     # make the intersection points into a list of tuples
@@ -600,11 +609,9 @@ def grid_outcome(P, L, new_grid):
     joined_final = [j for i in joined_all for j in i]
     # delete duplicates
     no_repeat = list(set([x for x in joined_final]))
-    # print(no_repeat)
     # laser touched all intersect pts
     all_touched = all(elem in no_repeat for elem in intersect_pts)
     return all_touched
-
 
 def output_random_grid(Grid, A, B, C):
     '''
