@@ -764,6 +764,11 @@ if __name__ == '__main__':
     print('Solution:')
     print('')
     print("\n".join(map(" ".join, solved)))
+    with open('Solution.txt', mode="w") as outfile:
+        outfile.write('Solution:\n')
+        outfile.write('\n')
+        for s in solved:
+            outfile.write("%s\n" % s)
     end = time.time()
     print('Time Elapsed: '+str(end-start)+' seconds')
     # Number of laser grid points is 2N*2N
