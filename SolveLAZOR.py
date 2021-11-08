@@ -461,7 +461,8 @@ def path_loop(L, new_grid):
     vy1 = old_y + vy
 
     if in_grid:
-        if new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o' or new_grid[vy1][vx1] == 'xo' or new_grid[vy1][vx1] == 'ox':
+        if new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o' or\
+             new_grid[vy1][vx1] == 'xo' or new_grid[vy1][vx1] == 'ox':
             new_x = vx1
             new_y = vy1
             laser_pos.append((new_x, new_y))
@@ -482,10 +483,12 @@ def path_loop(L, new_grid):
 
         # if laser is stuck between 2 A blocks
         if hit == 1:
-            if new_grid[old_y][old_x-1] == 'A' and new_grid[old_y][old_x+1] == 'A':
+            if new_grid[old_y][old_x-1] == 'A'\
+                 and new_grid[old_y][old_x+1] == 'A':
                 break
         if hit == 0:
-            if new_grid[old_y-1][old_x] == 'A' and new_grid[old_y+1][old_x] == 'A':
+            if new_grid[old_y-1][old_x] == 'A'\
+                 and new_grid[old_y+1][old_x] == 'A':
                 break
 
         # get the change and update new position
@@ -596,8 +599,8 @@ def grid_outcome(P, L, new_grid):
     '''
     # include all lasers (some files have multiple starting lasers)
     joined_all = []
-    for l in L:
-        join = get_all_paths_taken([l], new_grid)
+    for i in L:
+        join = get_all_paths_taken([i], new_grid)
         joined_all.append(join)
 
     # make the intersection points into a list of tuples
@@ -612,6 +615,7 @@ def grid_outcome(P, L, new_grid):
     # laser touched all intersect pts
     all_touched = all(elem in no_repeat for elem in intersect_pts)
     return all_touched
+
 
 def output_random_grid(Grid, A, B, C):
     '''
@@ -690,6 +694,7 @@ def solve_lazor(P, A, B, C, L, Grid):
             continue
         else:
             Repeat_Grid.append(Output_Grid)
+            # print(len(Repeat_Grid))
         new_grid = define_grid(Output_Grid)
         # print(new_grid)
         # print(as_string(new_grid))
@@ -704,10 +709,15 @@ def solve_lazor(P, A, B, C, L, Grid):
 
 if __name__ == '__main__':
     start = time.time()
-    bfffile = 'bff_files\\yarn_5.bff'
+    bfffile = 'bff_files\\mad_7.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
+    solution_grid = ['o B x o o', 'o A o o o', 'A x o o A', 'o x A o x',
+                     'A o x x A', 'B A x A o']
+    solution_grid_num = ['B o o', 'A x x', 'B o A', 'A x o', 'B o o']
+    new_grid_sol = define_grid(solution_grid_num)
+    print(grid_outcome(P, L, new_grid_sol))
     ans = Block('o', 1, 1, 1)
     a = ans('o', 1, 0, 1)
     print('')
