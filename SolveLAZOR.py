@@ -740,7 +740,7 @@ def solve_lazor(P, A, B, C, L, Grid):
 
 if __name__ == '__main__':
     start = time.time()
-    bfffile = 'bff_files\\tiny_5.bff'
+    bfffile = 'bff_files\\showstopper_4.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
