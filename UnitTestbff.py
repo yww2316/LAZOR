@@ -35,6 +35,12 @@ class bffTest(unittest.TestCase):
                 ['B', 'B', 'Bo', 'o', 'ox', 'x', 'xo', 'o', 'oo', 'o', 'o']]
         self.Grid = ['o B x o o', 'o o o o o', 'o x o o o', 'o x o o x',
                      'o o x x o', 'B o x o o']
+        self.Solution_Grid = ['o B x o o', 'o A o o o', 'A x o o A',
+                              'o x A o x', 'A o x x A', 'B A x A o']
+        self.P = [[6, 9], [9, 2]]
+        self.L = [[4, 1, 1, 1]]
+        self.sol_grid = ['o B x o o', 'o A o o o', 'A x o o A', 'o x A o x',
+                    'A o x x A', 'B A x A o']
 
     def test_Check_Parsing(self):
         '''
@@ -85,6 +91,19 @@ class bffTest(unittest.TestCase):
         self.assertEqual(define_grid(self.Grid), self.define_grid,
                          'The grid coordinates were not generated correctly.')
 
+    def test_random_grid(self):
+        '''
+        Checks to makes sure that a random grid is ouputted.
+        '''
+        P, A, B, C, L, Grid = self.parseddata
+        self.assertTrue(type(output_random_grid(Grid, A, B, C)) is list)
+
+    def test_grid_outcome(self):
+        '''
+        Checks to make sure that grid_outcome identifies a correct solution.
+        '''
+        self.assertTrue(grid_outcome(self.P, self.L, define_grid(self.sol_grid)))
+
     def test_Solve(self):
         '''
         Checks to make sure that the correct solution is outputted
@@ -92,13 +111,6 @@ class bffTest(unittest.TestCase):
         '''
         P, A, B, C, L, Grid = self.parseddata
         self.assertTrue(type(solve_lazor(P, A, B, C, L, Grid)) is list)
-
-    def test_random_grid(self):
-        '''
-        Checks to makes sure that a random grid is ouputted.
-        '''
-        P, A, B, C, L, Grid = self.parseddata
-        self.assertTrue(type(output_random_grid(Grid, A, B, C, [])) is tuple)
 
 
 if __name__ == '__main__':
