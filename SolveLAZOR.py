@@ -41,29 +41,39 @@ def ReadInbff(bfffile):
     C = 0
     with open(bfffile, 'r') as f:
         for line in f:
+            # Ignore comment lines
             if '#' in line:
                 continue
+            # Take in information from lines that start with P.
             elif line.startswith('P'):
                 appending = line.partition('P')[2].strip()
                 appending = [int(i) for i in appending.split() if i.isdigit()]
                 P.append(appending)
+            # Take in information from lines that start with A.
             elif line.startswith('A'):
                 A = int(line.partition('A')[2].strip())
+            # Take in information from lines that start with B.
             elif (line.startswith('B') and
                   line.partition('B')[2].strip().isdigit()):
                 B = int(line.partition('B')[2].strip())
+            # Take in information from lines that start with C.
             elif line.startswith('C'):
                 C = int(line.partition('C')[2].strip())
+            # Take in information from lines that start with L.
             elif line.startswith('L'):
                 appending = line.partition('L')[2].strip()
                 appending = [int(i) for i in appending.split()]
                 L.append(appending)
+            # Start reading in lines after GRID START for Grid
             elif line.startswith('GRID START'):
                 copy = True
                 continue
+            # Stop reading in lines after GRID STOP for Grid
             elif line.startswith('GRID STOP'):
                 copy = False
                 continue
+            # Sucessively add lines to Grid after GRID START and
+            # before GRID STOP
             elif copy:
                 Grid.append(line.strip().replace("  ", ""))
     return P, A, B, C, L, Grid
@@ -177,7 +187,10 @@ class Block:
         return vx, vy, va, vb
 
     def __call__(self, block_type, lr, va, vb):
-
+        '''
+        Return a specific velocity based off of what Block is present
+        in the reformatted output define_grid.
+        '''
         if 'B' in block_type:
             return Block.Opaque(lr, va, vb)
         elif 'A' in block_type:
@@ -644,21 +657,31 @@ def output_random_grid(Grid, A, B, C):
     '''
     Random_Grid = []
     Output_Grid = []
+    # Format Grid into Random_Grid for easier indexing.
     for i in Grid:
         Random_Grid.append(i.split(" "))
+    # Put blocks in random positions here.
     while A > 0 or B > 0 or C > 0:
+        # Pick two random points for x and y
         list1 = random.randrange(len(Random_Grid))
         list2 = random.randrange(len(Random_Grid[0]))
+        # Only put blocks in places there is an o present.
         if Random_Grid[list1][list2] == 'o':
+            # Keep placing A blocks until A blocks are depleted.
             if A > 0:
                 Random_Grid[list1][list2] = 'A'
                 A -= 1
+            # After A blocks are depleted, place B blocks
+            # until B blocks are depleted.
             elif B > 0:
                 Random_Grid[list1][list2] = 'B'
                 B -= 1
+            # After A and B blocks are depleted, place C blocks
+            # until C blocks are depleted.
             elif C > 0:
                 Random_Grid[list1][list2] = 'C'
                 C -= 1
+    # Reformat Output_Grid into the same format as Grid for later use.
     for i in Random_Grid:
         Output_Grid.append(" ".join(i))
     return Output_Grid
@@ -689,23 +712,26 @@ def solve_lazor(P, A, B, C, L, Grid):
         Solved_Grid: *list
 
     '''
+    # Flag that says no working grid has been found yet.
     Solution_Flag = 0
+    # Start a repeat_grid list that keeps all the wrong grids for speed.
     Repeat_Grid = collections.deque([])
+    # Keep checking grids until a working grid is found by grid_outcome.
     while Solution_Flag == 0:
         Output_Grid = output_random_grid(Grid, A, B, C)
+        # If the Output_Grid is already wrong, try again.
         if Output_Grid in Repeat_Grid:
             continue
         else:
+            # Save unique wrong grids here.
             Repeat_Grid.append(Output_Grid)
             # print(len(Repeat_Grid))
+        # Change coordinate system of Output_Grid
         new_grid = define_grid(Output_Grid)
-        # print(new_grid)
-        # print(as_string(new_grid))
-        # time_wow = time.time()
+        # Check to see if new_grid works.
         Solution_Flag = grid_outcome(P, L, new_grid)
-        # print('wow')
         time_end = time.time()
-        # print(time_end-time_wow)
+        # Stop function after 120 seconds have passed the time limit.
         if time_end-start > 120:
             print('This puzzle cannot be solved in two minutes.')
             break
