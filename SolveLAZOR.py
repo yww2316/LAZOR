@@ -467,8 +467,11 @@ def path_loop(L, new_grid):
             new_y = vy1
             laser_pos.append((new_x, new_y))
             blk_type.append(new_grid[new_y][new_x])
-
+    check_start = time.time()
     while in_grid and vel_chk:
+        check_end = time.time()
+        if check_end-check_start > .003:
+            break
         # get current laser position
         lz_cur = laser_pos[-1]
         old_x = lz_cur[0]
@@ -482,14 +485,14 @@ def path_loop(L, new_grid):
             hit = 0
 
         # if laser is stuck between 2 A blocks
-        if hit == 1:
-            if new_grid[old_y][old_x-1] == 'A'\
-                 and new_grid[old_y][old_x+1] == 'A':
-                break
-        if hit == 0:
-            if new_grid[old_y-1][old_x] == 'A'\
-                 and new_grid[old_y+1][old_x] == 'A':
-                break
+        # if hit == 1:
+        #     if new_grid[old_y][old_x-1] == 'A'\
+        #          and new_grid[old_y][old_x] == 'A':
+        #         break
+        # if hit == 0:
+        #     if new_grid[old_y-1][old_x] == 'A'\
+        #          and new_grid[old_y][old_x] == 'A':
+        #         break
 
         # get the change and update new position
         ch = change(new_grid[old_y][old_x], hit, vx, vy)
@@ -698,9 +701,11 @@ def solve_lazor(P, A, B, C, L, Grid):
         new_grid = define_grid(Output_Grid)
         # print(new_grid)
         # print(as_string(new_grid))
+        # time_wow = time.time()
         Solution_Flag = grid_outcome(P, L, new_grid)
         # print('wow')
         time_end = time.time()
+        # print(time_end-time_wow)
         if time_end-start > 120:
             print('This puzzle cannot be solved in two minutes.')
             break
@@ -709,14 +714,16 @@ def solve_lazor(P, A, B, C, L, Grid):
 
 if __name__ == '__main__':
     start = time.time()
-    bfffile = 'bff_files\\mad_7.bff'
+    bfffile = 'bff_files\\tiny_5.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     P, A, B, C, L, Grid = ReadInbff(bfffile)
     solution_grid = ['o B x o o', 'o A o o o', 'A x o o A', 'o x A o x',
                      'A o x x A', 'B A x A o']
     solution_grid_num = ['B o o', 'A x x', 'B o A', 'A x o', 'B o o']
-    new_grid_sol = define_grid(solution_grid_num)
+    solution_grid_mad = ['o o A o o', 'o o o A o', 'A o A o x', 'o o o A o',
+                         'o o A o o']
+    new_grid_sol = define_grid(solution_grid_mad)
     print(grid_outcome(P, L, new_grid_sol))
     ans = Block('o', 1, 1, 1)
     a = ans('o', 1, 0, 1)
