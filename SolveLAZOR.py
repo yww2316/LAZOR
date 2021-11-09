@@ -453,32 +453,72 @@ def path_loop(L, new_grid):
     # (we don't want that)
     in_grid = pos_chk(old_x + vx, old_y + vy, grid_w - 2, grid_h - 2)
 
-    vx1 = old_x + vx
-    vy1 = old_y + vy
-
     if in_grid:
-        if new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o' or\
-             new_grid[vy1][vx1] == 'xo' or new_grid[vy1][vx1] == 'ox':
-            new_x = vx1
-            new_y = vy1
-            laser_pos.append((new_x, new_y))
-            blk_type.append(new_grid[new_y][new_x])
-    check_start = time.time()
+        # check on top/bottom (vert) or left/right (horiz) - x odd or even
+        if old_x % 2 == 0:   # if even, on horiz
+            old_loc = 0
+        else:
+            old_loc = 1
+        # if on the side of an A block at starting pt
+        if 'A' in new_grid[old_y][old_x] and old_loc == 0:
+            # if blank block for first pt, don't reflect
+            if new_grid[old_y][old_x + vx] == 'o':
+                new_x = old_x + vx
+                new_y = old_y + vy
+                laser_pos.append((new_x, new_y))
+                blk_type.append(new_grid[new_y][new_x])
+            elif new_grid[old_y + vy][old_x] == 'o' and old_loc == 1:
+                new_x = old_x + vx
+                new_y = old_y + vy
+                laser_pos.append((new_x, new_y))
+                blk_type.append(new_grid[new_y][new_x])
+
+#         if new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o' or\
+#              new_grid[vy1][vx1] == 'xo' or new_grid[vy1][vx1] == 'ox':
+#             new_x = vx1
+#             new_y = vy1
+#             laser_pos.append((new_x, new_y))
+#             blk_type.append(new_grid[new_y][new_x])
+#     check_start = time.time()
+
     while in_grid and vel_chk:
-        check_end = time.time()
-        if check_end-check_start > .001:
-            break
+
+#         check_end = time.time()
+#         if check_end-check_start > .001:
+#             break
+
         # get current laser position
         lz_cur = laser_pos[-1]
         old_x = lz_cur[0]
         old_y = lz_cur[1]
         blk_type.append(new_grid[old_y][old_x])
 
-        # check hit top/bottom (0) or left/right (1) - x odd or even
+        # check next hit top/bottom (0) or left/right (1) - x odd or even
         if old_x % 2 == 0:   # if even, left/right
             hit = 1
         else:
             hit = 0
+
+        # testing if the starting laser is b/t two As
+        # check are they within the grid
+        check_list = []
+        for chk in [
+                (old_y, old_x - 1), (old_y, old_x + 1),
+                (old_y - 1, old_x), (old_y + 1, old_x)]:
+
+            in_grid_chk = pos_chk(chk[0], chk[1], grid_w - 2, grid_h - 2)
+            check_list.append(in_grid_chk)
+
+        if all(check_list):
+            # if laser is stuck between 2 A blocks
+            if hit == 1:
+                if new_grid[old_y][old_x - 1] == 'A' and \
+                        new_grid[old_y][old_x + 1] == 'A':
+                    break
+            if hit == 0:
+                if new_grid[old_y - 1][old_x] == 'A' and \
+                        new_grid[old_y + 1][old_x] == 'A':
+                    break
 
         # get the change and update new position
         ch = change(new_grid[old_y][old_x], hit, vx, vy)
@@ -596,13 +636,15 @@ def grid_outcome(P, L, new_grid):
     intersect_pts = []
     for pt in P:
         intersect_pts.append(tuple(pt))
-
+    print(joined_all)
+    print(intersect_pts)
     # flatten lists
     joined_final = [j for i in joined_all for j in i]
     # delete duplicates
     no_repeat = list(set([x for x in joined_final]))
     # laser touched all intersect pts
     all_touched = all(elem in no_repeat for elem in intersect_pts)
+    print(all_touched)
     return all_touched
 
 
@@ -636,10 +678,10 @@ def Solve_LAZOR(bfffile):
             if i == 'o':
                 Possible_Pos.append((r, c))
     Possible_Pos = random.sample(Possible_Pos, k=len(Possible_Pos))
-    for i in itertools.combinations(Possible_Pos, A+B+C):
+    for i in itertools.combinations(Possible_Pos, A + B + C):
         i = random.sample(i, k=len(i))
         end = time.time()
-        if end-start > 120:
+        if end - start > 120:
             print('This Puzzle Cannot Be Solved in Two Minutes')
             break
         Random_Grid = copy.deepcopy(wow_Grid)
@@ -670,6 +712,7 @@ def Solve_LAZOR(bfffile):
             Output_Grid.append(" ".join(i))
         new_grid = define_grid(Output_Grid)
         if grid_outcome(P, L, new_grid):
+            print('passed grid_outcome test?')
             break
     # Print the solution grid in the terminal
     print('')
@@ -684,7 +727,7 @@ def Solve_LAZOR(bfffile):
             outfile.write("%s\n" % s)
     # Print the amount of time this function took to run
     end = time.time()
-    print('Time Elapsed: '+str(end-start)+' seconds')
+    print('Time Elapsed: ' + str(end - start) + ' seconds')
     return Output_Grid
 
 
