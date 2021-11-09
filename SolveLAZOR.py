@@ -482,13 +482,8 @@ def path_loop(L, new_grid):
             new_y = vy1
             laser_pos.append((new_x, new_y))
             blk_type.append(new_grid[new_y][new_x])
-#     check_start = time.time()
 
     while in_grid and vel_chk:
-
-        #         check_end = time.time()
-        #         if check_end-check_start > .001:
-        #             break
 
         # get current laser position
         lz_cur = laser_pos[-1]
@@ -685,7 +680,7 @@ def Solve_LAZOR(bfffile):
         for c, i in enumerate(row):
             if i == 'o':
                 Possible_Pos.append((r, c))
-    Possible_Pos = random.sample(Possible_Pos, k=len(Possible_Pos))
+    # Possible_Pos = random.sample(Possible_Pos, k=len(Possible_Pos))
     # Increases the chance of a correct position to be hit if the numbere
     # of permutations is too high to check in two minutes.
     if len(Possible_Pos) > 19:
@@ -698,10 +693,10 @@ def Solve_LAZOR(bfffile):
         if method == itertools.combinations:
             i = random.sample(i, k=len(i))
         # Stop solving if puzzle is not solved within two minutes
-        end = time.time()
-        if end - start > 120:
-            print('This Puzzle Cannot Be Solved in Two Minutes')
-            break
+        # end = time.time()
+        # if end - start > 120:
+        #     print('This Puzzle Cannot Be Solved in Two Minutes')
+        #     break
         # Rewrite Random_Grid every solving iteration
         Random_Grid = copy.deepcopy(wow_Grid)
         Output_Grid = []
