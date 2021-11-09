@@ -396,22 +396,6 @@ def define_grid(Grid):
     return grid_coords
 
 
-def as_string(seq_of_rows):
-    '''
-    Function for visualizing the new_grid more easily.
-
-    **Parameters**
-        seq_of_rows: *list
-            A list of lists that has the elements of the new coordinate system.
-
-    **Returns**
-        Visual: *string
-            A string that has all the elements in a more visually
-            understandable format.
-    '''
-    return '\n'.join(''.join(str(i).center(5) for i in row)
-                     for row in seq_of_rows)
-
 def path_loop(L, new_grid):
 
     '''
@@ -469,24 +453,22 @@ def path_loop(L, new_grid):
     # because laser reflects if its on an A block at the beginning
     # (we don't want that)
     in_grid = pos_chk(old_x + vx, old_y + vy, grid_w - 2, grid_h - 2)
-    
+
     vx1 = old_x + vx
     vy1 = old_y + vy
 
     if in_grid:
-        if 'A' in new_grid[old_y][old_x]:
-            if new_grid[old_y][old_x + vx] == 'o':
-                new_x = old_x + vx
-                new_y = old_y + vy
-                laser_pos.append((new_x, new_y))
-                blk_type.append(new_grid[new_y][new_x])
-            elif new_grid[old_y + vy][old_x] == 'o':
-                new_x = vx1
-                new_y = vy1
-                laser_pos.append((new_x, new_y))
-                blk_type.append(new_grid[new_y][new_x])
-
+        if new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o' or\
+             new_grid[vy1][vx1] == 'xo' or new_grid[vy1][vx1] == 'ox':
+            new_x = vx1
+            new_y = vy1
+            laser_pos.append((new_x, new_y))
+            blk_type.append(new_grid[new_y][new_x])
+    check_start = time.time()
     while in_grid and vel_chk:
+        check_end = time.time()
+        if check_end-check_start > .003:
+            break
         # get current laser position
         lz_cur = laser_pos[-1]
         old_x = lz_cur[0]
@@ -498,12 +480,12 @@ def path_loop(L, new_grid):
             hit = 1
         else:
             hit = 0
+
         # get the change and update new position
         ch = change(new_grid[old_y][old_x], hit, vx, vy)
         blk_type.append(new_grid[old_y][old_x])
 
         if len(ch) == 2:  # A or B block
-
             # update velocity
             vx = ch[0]
             vy = ch[1]
@@ -514,11 +496,9 @@ def path_loop(L, new_grid):
             if vx == 0 and vy == 0:
                 vel_chk = False
 
-
         # will have two velocity pairs for C
         # doesn't perform the refract action if prev. was also a C
         elif len(ch) == 4 and 'C' not in blk_type[-3]:
-
             vx = ch[0]
             vy = ch[1]
             extra_vx = ch[2]
@@ -609,9 +589,8 @@ def grid_outcome(P, L, new_grid):
     '''
     # include all lasers (some files have multiple starting lasers)
     joined_all = []
-    for l in L:
-
-        join = get_all_paths_taken([l], new_grid)
+    for i in L:
+        join = get_all_paths_taken([i], new_grid)
         joined_all.append(join)
 
     # make the intersection points into a list of tuples
@@ -621,9 +600,8 @@ def grid_outcome(P, L, new_grid):
 
     # flatten lists
     joined_final = [j for i in joined_all for j in i]
+    # delete duplicates
     no_repeat = list(set([x for x in joined_final]))
-    print(no_repeat)
-
     # laser touched all intersect pts
     all_touched = all(elem in no_repeat for elem in intersect_pts)
     return all_touched
@@ -692,11 +670,9 @@ def Solve_LAZOR(bfffile):
         for i in Random_Grid:
             Output_Grid.append(" ".join(i))
         new_grid = define_grid(Output_Grid)
-
         if grid_outcome(P, L, new_grid):
             break
     # Print the solution grid in the terminal
-
     print('')
     print('Solution:')
     print('')
