@@ -749,7 +749,7 @@ def Solve_LAZOR(bfffile):
 
 
 if __name__ == '__main__':
-    # bfffile = 'bff_files/yarn_5.bff'
+    # Input desired .bff file name in the terminal
     bfffile = input('Please Enter the name of the .bff file to be solved: ')
     bfffile = 'bff_files/' + bfffile
     solved = Solve_LAZOR(bfffile)

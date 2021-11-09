@@ -91,20 +91,21 @@ class bffTest(unittest.TestCase):
         self.assertEqual(define_grid(self.Grid), self.define_grid,
                          'The grid coordinates were not generated correctly.')
 
-    def test_random_grid(self):
+    def test_Solve_LAZOR(self):
         '''
         Checks to makes sure that a random grid is ouputted.
         '''
         P, A, B, C, L, Grid = self.parseddata
-        self.assertTrue(Solve_LAZOR('bff_files\\showstopper_4.bff') is
-                        self.sol_grid)
+        self.assertTrue(Solve_LAZOR('bff_files\\yarn_5.bff') ==
+                        self.sol_grid, 'The incorrect grid was outputted')
 
     def test_grid_outcome(self):
         '''
         Checks to make sure that grid_outcome identifies a correct solution.
         '''
         self.assertTrue(grid_outcome(self.P, self.L,
-                                     define_grid(self.sol_grid)))
+                                     define_grid(self.sol_grid)),
+                        'The incorrect grid outcome was outputted')
 
 
 if __name__ == '__main__':
