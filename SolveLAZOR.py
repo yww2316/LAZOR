@@ -567,8 +567,12 @@ def path_loop(L, new_grid):
         laser_pos.append((new_x, new_y))
         in_grid = pos_chk(
             laser_pos[-1][0], laser_pos[-1][1], grid_w - 2, grid_h - 2)
+    # delete repeats
+    laser_pos_no_rep = list(set([x for x in laser_pos]))
+    # sort
+    laser_pos_sort = sorted(laser_pos_no_rep, key=lambda tup: (tup[0], tup[1]))
 
-    return laser_pos, refract_list
+    return laser_pos_sort, refract_list
 
 
 def get_all_paths_taken(L, new_grid):
@@ -605,8 +609,9 @@ def get_all_paths_taken(L, new_grid):
     joined_final = [j for i in total_pos for j in i]
     # take out the negatives
     result = [i for i in joined_final if i[0] >= 0 and i[1] >= 0]
-
-    return result
+    result_no_rep = list(set([x for x in result]))
+    result_sort = sorted(result_no_rep, key=lambda tup: (tup[0], tup[1]))
+    return result_sort
 
 
 def grid_outcome(P, L, new_grid):
