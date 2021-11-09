@@ -683,15 +683,15 @@ def Solve_LAZOR(bfffile):
     Possible_Pos = random.sample(Possible_Pos, k=len(Possible_Pos))
     # Increases the chance of a correct position to be hit if the numbere
     # of permutations is too high to check in two minutes.
-    # print(len(Possible_Pos))
-    if len(Possible_Pos) > 20:
+    if len(Possible_Pos) > 19:
         method = itertools.combinations
     else:
         method = itertools.permutations
     # Based off the size of A+B+C, use a specific method
     # to check positions
     for i in method(Possible_Pos, A + B + C):
-        i = random.sample(i, k=len(i))
+        if method == itertools.combinations:
+            i = random.sample(i, k=len(i))
         # Stop solving if puzzle is not solved within two minutes
         end = time.time()
         if end - start > 120:
