@@ -370,7 +370,7 @@ def define_grid(Grid):
     grid_coords.append(row)
 
     # Lastly, we want to consider when the blocks are touching
-    # ie. (share a side) in the y direction,
+    # i.e. (share a side) in the y direction,
     # meaning that one is above the other and they share that y coordinate.
     # We incorporate this into grid_coords, which is our final output.
     try:
@@ -639,15 +639,12 @@ def grid_outcome(P, L, new_grid):
     intersect_pts = []
     for pt in P:
         intersect_pts.append(tuple(pt))
-    # print(joined_all)
-    # print(intersect_pts)
     # flatten lists
     joined_final = [j for i in joined_all for j in i]
     # delete duplicates
     no_repeat = list(set([x for x in joined_final]))
     # laser touched all intersect pts
     all_touched = all(elem in no_repeat for elem in intersect_pts)
-    # print(all_touched)
     return all_touched
 
 
@@ -664,6 +661,7 @@ def Solve_LAZOR(bfffile):
             The randomized grid with A, B, and C placed at random positions
             where o used to be.
     '''
+    random.seed(1)
     start = time.time()
     P, A, B, C, L, Grid = ReadInbff(bfffile)
     print('')
@@ -692,11 +690,6 @@ def Solve_LAZOR(bfffile):
     for i in method(Possible_Pos, A + B + C):
         if method == itertools.combinations:
             i = random.sample(i, k=len(i))
-        # Stop solving if puzzle is not solved within two minutes
-        # end = time.time()
-        # if end - start > 120:
-        #     print('This Puzzle Cannot Be Solved in Two Minutes')
-        #     break
         # Rewrite Random_Grid every solving iteration
         Random_Grid = copy.deepcopy(wow_Grid)
         Output_Grid = []
