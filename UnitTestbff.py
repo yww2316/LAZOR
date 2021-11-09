@@ -96,7 +96,8 @@ class bffTest(unittest.TestCase):
         Checks to makes sure that a random grid is ouputted.
         '''
         P, A, B, C, L, Grid = self.parseddata
-        self.assertTrue(type(output_random_grid(Grid, A, B, C)) is list)
+        self.assertTrue(Solve_LAZOR('bff_files\\showstopper_4.bff') is
+                        self.sol_grid)
 
     def test_grid_outcome(self):
         '''
@@ -104,14 +105,6 @@ class bffTest(unittest.TestCase):
         '''
         self.assertTrue(grid_outcome(self.P, self.L,
                                      define_grid(self.sol_grid)))
-
-    def test_Solve(self):
-        '''
-        Checks to make sure that the correct solution is outputted
-        by the solve function.
-        '''
-        P, A, B, C, L, Grid = self.parseddata
-        self.assertTrue(type(solve_lazor(P, A, B, C, L, Grid)) is list)
 
 
 if __name__ == '__main__':
