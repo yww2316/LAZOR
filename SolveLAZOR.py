@@ -453,6 +453,9 @@ def path_loop(L, new_grid):
     # (we don't want that)
     in_grid = pos_chk(old_x + vx, old_y + vy, grid_w - 2, grid_h - 2)
 
+    vx1 = old_x + vx
+    vy1 = old_y + vy
+
     if in_grid:
         # check on top/bottom (vert) or left/right (horiz) - x odd or even
         if old_x % 2 == 0:   # if even, on horiz
@@ -473,19 +476,19 @@ def path_loop(L, new_grid):
                 laser_pos.append((new_x, new_y))
                 blk_type.append(new_grid[new_y][new_x])
 
-#         if new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o' or\
-#              new_grid[vy1][vx1] == 'xo' or new_grid[vy1][vx1] == 'ox':
-#             new_x = vx1
-#             new_y = vy1
-#             laser_pos.append((new_x, new_y))
-#             blk_type.append(new_grid[new_y][new_x])
+        elif new_grid[vy1][vx1] == 'oo' or new_grid[vy1][vx1] == 'o' or\
+                new_grid[vy1][vx1] == 'xo' or new_grid[vy1][vx1] == 'ox':
+            new_x = vx1
+            new_y = vy1
+            laser_pos.append((new_x, new_y))
+            blk_type.append(new_grid[new_y][new_x])
 #     check_start = time.time()
 
     while in_grid and vel_chk:
 
-#         check_end = time.time()
-#         if check_end-check_start > .001:
-#             break
+        #         check_end = time.time()
+        #         if check_end-check_start > .001:
+        #             break
 
         # get current laser position
         lz_cur = laser_pos[-1]
@@ -732,7 +735,7 @@ def Solve_LAZOR(bfffile):
 
 
 if __name__ == '__main__':
-    bfffile = 'bff_files\\mad_7.bff'
+    bfffile = 'bff_files/numbered_6.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     # print(Grid)
