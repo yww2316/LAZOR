@@ -639,7 +639,7 @@ def Solve_LAZOR(bfffile):
     Possible_Pos = random.sample(Possible_Pos, k=len(Possible_Pos))
     for i in permutations(Possible_Pos, A+B+C):
         end = time.time()
-        if end-start > 10:
+        if end-start > 120:
             print('This Puzzle Cannot Be Solved in Two Minutes')
             break
         Random_Grid = copy.deepcopy(wow_Grid)
@@ -690,7 +690,7 @@ def Solve_LAZOR(bfffile):
 
 
 if __name__ == '__main__':
-    bfffile = 'bff_files\\yarn_5.bff'
+    bfffile = 'bff_files\\tiny_5.bff'
     # bfffile=input('Please Enter the name of the .bff file to be solved: ')
     # bfffile='bff_files/' + bfffile
     # print(Grid)
